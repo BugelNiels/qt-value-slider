@@ -18,11 +18,12 @@ IntegerSliderWidget::IntegerSliderWidget(QString name, int value)
 }
 
 
-IntegerSliderWidget::IntegerSliderWidget(QString name, int value, int min, int max)
+IntegerSliderWidget::IntegerSliderWidget(QString name, int value, int min, int max, bool allowOutside)
         : name_(std::move(name)),
           value_(value),
           min_(min),
-          max_(max) {
+          max_(max),
+          allowOutside_(allowOutside) {
     init();
 }
 
@@ -140,7 +141,7 @@ void IntegerSliderWidget::mouseMoveEvent(QMouseEvent *event) {
         return;
     }
     if (event->buttons() & Qt::LeftButton) {
-        updateValue(event->pos().x());
+        updateValueByPosition(event->pos().x());
         mouseMoved_ = true;
     }
 }
@@ -152,7 +153,7 @@ void IntegerSliderWidget::mouseReleaseEvent(QMouseEvent *event) {
     }
     if (mouseMoved_) {
         if (event->button() == Qt::LeftButton) {
-            updateValue(event->pos().x());
+            updateValueByPosition(event->pos().x());
             unselect();
 
         }
@@ -161,12 +162,16 @@ void IntegerSliderWidget::mouseReleaseEvent(QMouseEvent *event) {
     }
 }
 
-void IntegerSliderWidget::updateValue(int x) {
+void IntegerSliderWidget::updateValueByPosition(int x) {
     double ratio = static_cast<double>(x) / width();
     double val = minimum() + ratio * (maximum() - minimum());
     int newVal = int(std::round(val));
     setValue(newVal);
-    value_ = newVal;
+    if (allowOutside_) {
+        value_ = newVal;
+    } else {
+        value_ = std::clamp(newVal, min_, max_);
+    }
     update();
 }
 
@@ -185,7 +190,11 @@ void IntegerSliderWidget::keyPressEvent(QKeyEvent *event) {
             bool ok;
             double newVal = typeInput_.toDouble(&ok);
             if (ok) {
-                value_ = int(std::round(newVal));
+                int iNewVal = int(std::round(newVal));
+                if(!allowOutside_) {
+                    iNewVal = std::clamp(iNewVal, min_, max_);
+                }
+                value_ = iNewVal;
             }
             stopTyping();
             return;

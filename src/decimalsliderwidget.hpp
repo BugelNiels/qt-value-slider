@@ -13,7 +13,7 @@ public:
 
     DecimalSliderWidget(QString name, double value);
 
-    DecimalSliderWidget(QString name, double value, double min, double max);
+    DecimalSliderWidget(QString name, double value, double min, double max, bool allowOutside = false);
 
 protected:
     void mouseDoubleClickEvent(QMouseEvent *event) override;
@@ -38,6 +38,7 @@ private:
 
     QColor oldBase_;
 
+    bool allowOutside_ = true;
     bool blinkerVisible_ = false;
     bool typing_ = false;
     QTimer *blinkerTimer_ = nullptr;
@@ -48,7 +49,7 @@ private:
     double min_ = 0;
     double max_ = 1;
 
-    void updateValue(int x);
+    void updateValueByPosition(int x);
 
     void init();
 

@@ -13,7 +13,7 @@ public:
 
     IntegerSliderWidget(QString name, int value);
 
-    IntegerSliderWidget(QString name, int value, int min, int max);
+    IntegerSliderWidget(QString name, int value, int min, int max, bool allowOutside = false);
 
 protected:
     void mouseDoubleClickEvent(QMouseEvent *event) override;
@@ -38,6 +38,7 @@ private:
 
     QColor oldBase_;
 
+    bool allowOutside_ = true;
     bool blinkerVisible_ = false;
     bool typing_ = false;
     QTimer *blinkerTimer_ = nullptr;
@@ -48,7 +49,7 @@ private:
     int min_ = 0;
     int max_ = 100;
 
-    void updateValue(int x);
+    void updateValueByPosition(int x);
 
     void init();
 

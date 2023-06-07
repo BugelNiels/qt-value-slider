@@ -1,3 +1,8 @@
-# qt-value-slider
+# Qt Value Slider
 
-Custom widget for numbers similar to the number controls in Blender.
+This repository contains two new widgets that allow the user to better control decimal and integer values.
+The widget layout is inspired by Blender.
+
+## Features
+
+

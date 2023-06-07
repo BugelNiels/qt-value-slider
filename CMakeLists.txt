@@ -9,7 +9,8 @@ qt_add_executable(${PROJECT_NAME} WIN32 MACOSX_BUNDLE
         src/integersliderwidget.cpp
         src/decimalsliderwidget.hpp
         src/integersliderwidget.hpp
-        src/demo.cpp)
+        src/demo.cpp
+        )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
         Qt::Core
