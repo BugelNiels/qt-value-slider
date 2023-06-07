@@ -1,4 +1,4 @@
-#include "decimalsliderwidget.hpp"
+#include "integersliderwidget.hpp"
 #include <QMouseEvent>
 #include <QPainter>
 #include <QTimer>
@@ -6,19 +6,19 @@
 #include <utility>
 #include <QStyleOptionProgressBar>
 
-DecimalSliderWidget::DecimalSliderWidget(QString name)
+IntegerSliderWidget::IntegerSliderWidget(QString name)
         : name_(std::move(name)) {
     init();
 }
 
-DecimalSliderWidget::DecimalSliderWidget(QString name, double value)
+IntegerSliderWidget::IntegerSliderWidget(QString name, int value)
         : name_(std::move(name)),
           value_(value) {
     init();
 }
 
 
-DecimalSliderWidget::DecimalSliderWidget(QString name, double value, double min, double max)
+IntegerSliderWidget::IntegerSliderWidget(QString name, int value, int min, int max)
         : name_(std::move(name)),
           value_(value),
           min_(min),
@@ -26,26 +26,26 @@ DecimalSliderWidget::DecimalSliderWidget(QString name, double value, double min,
     init();
 }
 
-void DecimalSliderWidget::init() {
-    setMinimum(int(std::round(min_ * 100)));
-    setMaximum(int(std::round(max_ * 100)));
-    setValue(int(std::round(value_ * 100)));
+void IntegerSliderWidget::init() {
+    setMinimum(min_);
+    setMaximum(max_);
+    setValue(value_);
 
     blinkerTimer_ = new QTimer(this);
-    connect(blinkerTimer_, &QTimer::timeout, this, &DecimalSliderWidget::toggleBlinkerVisibility);
+    connect(blinkerTimer_, &QTimer::timeout, this, &IntegerSliderWidget::toggleBlinkerVisibility);
     oldBase_ = palette().color(QPalette::Base);
 }
 
-void DecimalSliderWidget::toggleBlinkerVisibility() {
+void IntegerSliderWidget::toggleBlinkerVisibility() {
     blinkerVisible_ = !blinkerVisible_;
     update();
 }
 
-QString DecimalSliderWidget::text() const {
+QString IntegerSliderWidget::text() const {
     return "";
 }
 
-void DecimalSliderWidget::startTyping() {
+void IntegerSliderWidget::startTyping() {
     setFocus();
     select();
     setValue(minimum());
@@ -55,15 +55,15 @@ void DecimalSliderWidget::startTyping() {
     update();
 }
 
-void DecimalSliderWidget::stopTyping() {
+void IntegerSliderWidget::stopTyping() {
     blinkerTimer_->stop();
     typing_ = false;
-    setValue(std::clamp(int(value_ * 100), minimum(), maximum()));
+    setValue(std::clamp(value_, minimum(), maximum()));
     unselect();
     update();
 }
 
-void DecimalSliderWidget::paintEvent(QPaintEvent *event) {
+void IntegerSliderWidget::paintEvent(QPaintEvent *event) {
     QProgressBar::paintEvent(event);
 
     QPainter painter(this);
@@ -105,26 +105,26 @@ void DecimalSliderWidget::paintEvent(QPaintEvent *event) {
         QString nameText = name_;
         painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, nameText);
 
-        QString valueText = QString::number(value_, 'f', 2);
+        QString valueText = QString::number(value_);
         QRect valueRect = rect.adjusted(QFontMetrics(font()).horizontalAdvance(nameText), 0, -padding_, 0);
         painter.drawText(valueRect, Qt::AlignRight | Qt::AlignVCenter, valueText);
     }
 
 }
 
-void DecimalSliderWidget::select() {
+void IntegerSliderWidget::select() {
     QPalette curPalette = QProgressBar::palette();
     curPalette.setColor(QPalette::Base, palette().color(QPalette::AlternateBase));
     QProgressBar::setPalette(curPalette);
 }
 
-void DecimalSliderWidget::unselect() {
+void IntegerSliderWidget::unselect() {
     QPalette curPalette = QProgressBar::palette();
     curPalette.setColor(QPalette::Base, oldBase_);
     QProgressBar::setPalette(curPalette);
 }
 
-void DecimalSliderWidget::mousePressEvent(QMouseEvent *event) {
+void IntegerSliderWidget::mousePressEvent(QMouseEvent *event) {
     QProgressBar::mousePressEvent(event);
     setFocus();
     if (typing_) {
@@ -134,7 +134,7 @@ void DecimalSliderWidget::mousePressEvent(QMouseEvent *event) {
     mouseMoved_ = false;
 }
 
-void DecimalSliderWidget::mouseMoveEvent(QMouseEvent *event) {
+void IntegerSliderWidget::mouseMoveEvent(QMouseEvent *event) {
     QProgressBar::mouseMoveEvent(event);
     if (typing_) {
         return;
@@ -145,7 +145,7 @@ void DecimalSliderWidget::mouseMoveEvent(QMouseEvent *event) {
     }
 }
 
-void DecimalSliderWidget::mouseReleaseEvent(QMouseEvent *event) {
+void IntegerSliderWidget::mouseReleaseEvent(QMouseEvent *event) {
     QProgressBar::mouseReleaseEvent(event);
     if (typing_) {
         return;
@@ -161,20 +161,20 @@ void DecimalSliderWidget::mouseReleaseEvent(QMouseEvent *event) {
     }
 }
 
-void DecimalSliderWidget::updateValue(int x) {
+void IntegerSliderWidget::updateValue(int x) {
     double ratio = static_cast<double>(x) / width();
     double val = minimum() + ratio * (maximum() - minimum());
     int newVal = int(std::round(val));
     setValue(newVal);
-    value_ = val / 100.0f;
+    value_ = newVal;
     update();
 }
 
-void DecimalSliderWidget::mouseDoubleClickEvent(QMouseEvent *event) {
+void IntegerSliderWidget::mouseDoubleClickEvent(QMouseEvent *event) {
     startTyping();
 }
 
-void DecimalSliderWidget::keyPressEvent(QKeyEvent *event) {
+void IntegerSliderWidget::keyPressEvent(QKeyEvent *event) {
     QWidget::keyPressEvent(event);
     if (typing_) {
         if (event->key() == Qt::Key_Escape) {
@@ -185,7 +185,7 @@ void DecimalSliderWidget::keyPressEvent(QKeyEvent *event) {
             bool ok;
             double newVal = typeInput_.toDouble(&ok);
             if (ok) {
-                value_ = newVal;
+                value_ = int(std::round(newVal));
             }
             stopTyping();
             return;
@@ -195,7 +195,7 @@ void DecimalSliderWidget::keyPressEvent(QKeyEvent *event) {
     }
 }
 
-void DecimalSliderWidget::focusOutEvent(QFocusEvent *event) {
+void IntegerSliderWidget::focusOutEvent(QFocusEvent *event) {
     QWidget::focusOutEvent(event);
     stopTyping();
 }

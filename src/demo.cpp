@@ -4,6 +4,7 @@
 #include <QLabel>
 
 #include "decimalsliderwidget.hpp"
+#include "integersliderwidget.hpp"
 
 int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
@@ -20,7 +21,8 @@ int main(int argc, char* argv[]) {
     wrapper.setLayout(&layout);
 
     layout.addWidget(new QLabel("Example:"));
-    layout.addWidget(new DecimalSliderWidget("Slider", 5, 0, 100));
+    layout.addWidget(new DecimalSliderWidget("Double"));
+    layout.addWidget(new IntegerSliderWidget("Integer"));
     w.setCentralWidget(&wrapper);
 
     w.show();

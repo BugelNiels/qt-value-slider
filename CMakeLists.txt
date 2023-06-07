@@ -6,9 +6,10 @@ find_package(Qt${QT_VERSION_MAJOR} OPTIONAL_COMPONENTS Widgets)
 
 qt_add_executable(${PROJECT_NAME} WIN32 MACOSX_BUNDLE
         src/decimalsliderwidget.cpp
+        src/integersliderwidget.cpp
         src/decimalsliderwidget.hpp
-        src/demo.cpp
-        )
+        src/integersliderwidget.hpp
+        src/demo.cpp)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
         Qt::Core

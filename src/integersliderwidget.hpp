@@ -5,15 +5,15 @@
 #include <QLineEdit>
 #include <QElapsedTimer>
 
-class DecimalSliderWidget : public QProgressBar {
+class IntegerSliderWidget : public QProgressBar {
 public:
-    DecimalSliderWidget() = default;
+    IntegerSliderWidget() = default;
 
-    explicit DecimalSliderWidget(QString name);
+    explicit IntegerSliderWidget(QString name);
 
-    DecimalSliderWidget(QString name, double value);
+    IntegerSliderWidget(QString name, int value);
 
-    DecimalSliderWidget(QString name, double value, double min, double max);
+    IntegerSliderWidget(QString name, int value, int min, int max);
 
 protected:
     void mouseDoubleClickEvent(QMouseEvent *event) override;
@@ -44,9 +44,9 @@ private:
     QString typeInput_ = "";
 
     QString name_ = "value";
-    double value_ = 0.5;
-    double min_ = 0;
-    double max_ = 1;
+    int value_ = 50;
+    int min_ = 0;
+    int max_ = 100;
 
     void updateValue(int x);
 
