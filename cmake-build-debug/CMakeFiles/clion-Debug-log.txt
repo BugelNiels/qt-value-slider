@@ -1,5 +1,0 @@
-/snap/clion/237/bin/cmake/linux/x64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/snap/clion/237/bin/ninja/linux/x64/ninja -G Ninja -S /home/niels/Documents/repos/qt-value-slider -B /home/niels/Documents/repos/qt-value-slider/cmake-build-debug
--- Could NOT find XKB (missing: XKB_LIBRARY XKB_INCLUDE_DIR) (Required is at least version "0.5.0")
--- Configuring done
--- Generating done
--- Build files have been written to: /home/niels/Documents/repos/qt-value-slider/cmake-build-debug
