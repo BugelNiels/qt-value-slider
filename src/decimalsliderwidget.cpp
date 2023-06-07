@@ -18,11 +18,12 @@ DecimalSliderWidget::DecimalSliderWidget(QString name, double value)
 }
 
 
-DecimalSliderWidget::DecimalSliderWidget(QString name, double value, double min, double max)
+DecimalSliderWidget::DecimalSliderWidget(QString name, double value, double min, double max, bool allowOutside)
         : name_(std::move(name)),
           value_(value),
           min_(min),
-          max_(max) {
+          max_(max),
+          allowOutside_(allowOutside) {
     init();
 }
 
@@ -140,7 +141,7 @@ void DecimalSliderWidget::mouseMoveEvent(QMouseEvent *event) {
         return;
     }
     if (event->buttons() & Qt::LeftButton) {
-        updateValue(event->pos().x());
+        updateValueByPosition(event->pos().x());
         mouseMoved_ = true;
     }
 }
@@ -152,7 +153,7 @@ void DecimalSliderWidget::mouseReleaseEvent(QMouseEvent *event) {
     }
     if (mouseMoved_) {
         if (event->button() == Qt::LeftButton) {
-            updateValue(event->pos().x());
+            updateValueByPosition(event->pos().x());
             unselect();
 
         }
@@ -161,12 +162,16 @@ void DecimalSliderWidget::mouseReleaseEvent(QMouseEvent *event) {
     }
 }
 
-void DecimalSliderWidget::updateValue(int x) {
+void DecimalSliderWidget::updateValueByPosition(int x) {
     double ratio = static_cast<double>(x) / width();
     double val = minimum() + ratio * (maximum() - minimum());
     int newVal = int(std::round(val));
     setValue(newVal);
-    value_ = val / 100.0f;
+    if (allowOutside_) {
+        value_ = val / 100.0f;
+    } else {
+        value_ = std::clamp(val / 100.0f, min_, max_);
+    }
     update();
 }
 
@@ -185,6 +190,9 @@ void DecimalSliderWidget::keyPressEvent(QKeyEvent *event) {
             bool ok;
             double newVal = typeInput_.toDouble(&ok);
             if (ok) {
+                if (!allowOutside_) {
+                    newVal = std::clamp(newVal, min_, max_);
+                }
                 value_ = newVal;
             }
             stopTyping();
