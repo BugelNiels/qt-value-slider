@@ -1,19 +1,21 @@
-cmake_minimum_required(VERSION 3.10)
-project(QtValueSlider)
+cmake_minimum_required(VERSION 3.16)
+project(nitro VERSION 1.0 LANGUAGES CXX)
 
-set(SOURCES
+find_package(QT NAMES Qt5 Qt6 REQUIRED COMPONENTS Core)
+find_package(Qt${QT_VERSION_MAJOR} OPTIONAL_COMPONENTS Widgets)
+
+qt_add_executable(${PROJECT_NAME} WIN32 MACOSX_BUNDLE
         src/decimalsliderwidget.cpp
         src/decimalsliderwidget.hpp
+        src/demo.cpp
         )
 
-add_library(${PROJECT_NAME} ${SOURCES})
+target_link_libraries(${PROJECT_NAME} PRIVATE
+        Qt::Core
+        Qt::Widgets
+        )
 
-target_include_directories(${PROJECT_NAME} PUBLIC src)
-
-option(ENABLE_DEMO "Enable demo" OFF)
-
-if(ENABLE_DEMO)
-  set(DEMO_SOURCE src/demo.cpp)
-  add_executable(Demo ${DEMO_SOURCE})
-  target_link_libraries(Demo PRIVATE QtValueSlider)
-endif()
+install(TARGETS ${PROJECT_NAME}
+        BUNDLE DESTINATION .
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        )
