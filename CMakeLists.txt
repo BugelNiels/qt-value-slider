@@ -10,12 +10,18 @@ if (SLIDER_LIBRARY)
             src/integersliderwidget.cpp
             )
 else ()
+
     add_executable(${PROJECT_NAME}
             src/decimalsliderwidget.cpp
             src/integersliderwidget.cpp
             src/demo.cpp
             )
 endif ()
+
+target_link_libraries(${PROJECT_NAME} PRIVATE
+        Qt::Core
+        Qt::Widgets
+        )
 
 target_include_directories(${PROJECT_NAME}
         PRIVATE
