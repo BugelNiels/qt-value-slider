@@ -33,15 +33,18 @@ namespace ValueSliders {
 /**
  * Decimal Slider Widget that allows the user to either drag or manually enter decimal values.
  */
-    class DecimalSliderWidget : public QProgressBar {
+    class DoubleSlider : public QProgressBar {
     public:
-        DecimalSliderWidget() = default;
+        DoubleSlider() = default;
 
-        explicit DecimalSliderWidget(QString name);
+        explicit DoubleSlider(QString name);
 
-        DecimalSliderWidget(QString name, double value);
+        DoubleSlider(QString name, double value);
 
-        DecimalSliderWidget(QString name, double value, double min, double max, bool allowOutside = false);
+        DoubleSlider(QString name, double value, double min, double max, bool allowOutside = false);
+
+        void setVal(double value);
+        [[nodiscard]] double getVal() const;
 
     protected:
         void mouseDoubleClickEvent(QMouseEvent *event) override;
@@ -69,7 +72,7 @@ namespace ValueSliders {
         bool allowOutside_ = true;
         bool blinkerVisible_ = false;
         bool typing_ = false;
-        QTimer *blinkerTimer_ = nullptr;
+        std::shared_ptr<QTimer> blinkerTimer_ = nullptr;
         QString typeInput_ = "";
 
         QString name_ = "value";

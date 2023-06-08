@@ -3,8 +3,8 @@
 #include <QVBoxLayout>
 #include <QLabel>
 
-#include "../include/decimalsliderwidget.hpp"
-#include "../include/integersliderwidget.hpp"
+#include "../include/doubleslider.hpp"
+#include "../include/intslider.hpp"
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
@@ -18,11 +18,11 @@ int main(int argc, char *argv[]) {
     wrapper.setLayout(&layout);
 
     layout.addWidget(new QLabel("This is a small demo program:"));
-    layout.addWidget(new ValueSliders::DecimalSliderWidget("Double"));
-    layout.addWidget(new ValueSliders::IntegerSliderWidget("Integer"));
+    layout.addWidget(new ValueSliders::DoubleSlider("Double"));
+    layout.addWidget(new ValueSliders::IntSlider("Integer"));
 
-    layout.addWidget(new ValueSliders::DecimalSliderWidget("Bounded Double", 50, 0, 100, false));
-    layout.addWidget(new ValueSliders::IntegerSliderWidget("Custom Name", 0, -50, 50, false));
+    layout.addWidget(new ValueSliders::DoubleSlider("Bounded Double", 50, 0, 100, false));
+    layout.addWidget(new ValueSliders::IntSlider("Custom Name", 0, -50, 50, false));
 
     w.setCentralWidget(&wrapper);
 

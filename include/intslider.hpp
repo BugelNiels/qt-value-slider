@@ -30,17 +30,21 @@
 
 namespace ValueSliders {
 
-    class IntegerSliderWidget : public QProgressBar {
+    class IntSlider : public QProgressBar {
     public:
-        IntegerSliderWidget() = default;
+        IntSlider() = default;
 
-        explicit IntegerSliderWidget(QString name);
+        explicit IntSlider(QString name);
 
-        IntegerSliderWidget(QString name, int value);
+        IntSlider(QString name, int value);
 
-        IntegerSliderWidget(QString name, int value, int min, int max, bool allowOutside = false);
+        IntSlider(QString name, int value, int min, int max, bool allowOutside = false);
+
+        void setVal(int value);
+        [[nodiscard]] int getVal() const;
 
     protected:
+
         void mouseDoubleClickEvent(QMouseEvent *event) override;
 
         void mousePressEvent(QMouseEvent *event) override;
@@ -66,7 +70,7 @@ namespace ValueSliders {
         bool allowOutside_ = true;
         bool blinkerVisible_ = false;
         bool typing_ = false;
-        QTimer *blinkerTimer_ = nullptr;
+        std::shared_ptr<QTimer> blinkerTimer_ = nullptr;
         QString typeInput_ = "";
 
         QString name_ = "value";
