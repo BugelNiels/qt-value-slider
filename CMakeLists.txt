@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.9)
 
 set(CMAKE_DISABLE_SOURCE_CHANGES ON)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
+
 set(SLIDER_LIBRARY ON)
 
 project(valueSliders VERSION 1.0 LANGUAGES CXX)

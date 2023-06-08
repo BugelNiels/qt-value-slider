@@ -1,11 +1,11 @@
-#include "../include/intslider.hpp"
+#include "intslider.hpp"
+
 #include <QMouseEvent>
 #include <QPainter>
 #include <QTimer>
-
-#include <utility>
 #include <QStyleOptionProgressBar>
-#include <QAccessible>
+#include <QElapsedTimer>
+#include <utility>
 
 ValueSliders::IntSlider::IntSlider(QString name)
         : name_(std::move(name)) {

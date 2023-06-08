@@ -1,11 +1,11 @@
-#include "../include/doubleslider.hpp"
+#include "doubleslider.hpp"
 
 #include <QMouseEvent>
 #include <QPainter>
 #include <QTimer>
-
-#include <utility>
 #include <QStyleOptionProgressBar>
+#include <QElapsedTimer>
+#include <utility>
 
 ValueSliders::DoubleSlider::DoubleSlider(QString name)
         : name_(std::move(name)) {
