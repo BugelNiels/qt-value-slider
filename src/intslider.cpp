@@ -210,7 +210,7 @@ void ValueSliders::IntSlider::setVal(int value) {
     } else {
         value_ = std::clamp(value, min_, max_);
     }
-    setValue(value);
+    setValue(std::clamp(value, minimum(), maximum()));
     setEnabled(true);
     update();
 }
