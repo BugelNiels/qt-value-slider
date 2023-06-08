@@ -1,11 +1,11 @@
-#include "../include/doubleslider.hpp"
+#include "doubleslider.hpp"
 
 #include <QMouseEvent>
 #include <QPainter>
 #include <QTimer>
-
-#include <utility>
 #include <QStyleOptionProgressBar>
+#include <QElapsedTimer>
+#include <utility>
 
 ValueSliders::DoubleSlider::DoubleSlider(QString name)
         : name_(std::move(name)) {
@@ -29,6 +29,7 @@ ValueSliders::DoubleSlider::DoubleSlider(QString name, double value, double min,
 }
 
 void ValueSliders::DoubleSlider::init() {
+    setFocusPolicy(Qt::StrongFocus);
     setMinimum(int(std::round(min_ * 100)));
     setMaximum(int(std::round(max_ * 100)));
     setValue(int(std::round(value_ * 100)));
@@ -49,8 +50,10 @@ QString ValueSliders::DoubleSlider::text() const {
 
 void ValueSliders::DoubleSlider::startTyping() {
     setFocus();
+    grabKeyboard();
     select();
     setValue(minimum());
+    setEnabled(true);
     typeInput_ = "";
     typing_ = true;
     blinkerTimer_->start(blinkerInterval_);
@@ -58,9 +61,10 @@ void ValueSliders::DoubleSlider::startTyping() {
 }
 
 void ValueSliders::DoubleSlider::stopTyping() {
+    releaseKeyboard();
     blinkerTimer_->stop();
     typing_ = false;
-    setValue(std::clamp(int(value_ * 100), minimum(), maximum()));
+    setVal(value_);
     unselect();
     update();
 }
@@ -127,7 +131,7 @@ void ValueSliders::DoubleSlider::unselect() {
 }
 
 void ValueSliders::DoubleSlider::mousePressEvent(QMouseEvent *event) {
-    QProgressBar::mousePressEvent(event);
+    event->accept();
     setFocus();
     if (typing_) {
         stopTyping();
@@ -137,18 +141,19 @@ void ValueSliders::DoubleSlider::mousePressEvent(QMouseEvent *event) {
 }
 
 void ValueSliders::DoubleSlider::mouseMoveEvent(QMouseEvent *event) {
-    QProgressBar::mouseMoveEvent(event);
     if (typing_) {
+        event->ignore();
         return;
     }
     if (event->buttons() & Qt::LeftButton) {
         updateValueByPosition(event->pos().x());
         mouseMoved_ = true;
+        event->accept();
+        return;
     }
 }
 
 void ValueSliders::DoubleSlider::mouseReleaseEvent(QMouseEvent *event) {
-    QProgressBar::mouseReleaseEvent(event);
     if (typing_) {
         return;
     }
@@ -160,6 +165,7 @@ void ValueSliders::DoubleSlider::mouseReleaseEvent(QMouseEvent *event) {
     } else {
         startTyping();
     }
+    event->accept();
 }
 
 void ValueSliders::DoubleSlider::updateValueByPosition(int x) {
@@ -170,11 +176,12 @@ void ValueSliders::DoubleSlider::updateValueByPosition(int x) {
 
 void ValueSliders::DoubleSlider::mouseDoubleClickEvent(QMouseEvent *event) {
     startTyping();
+    event->accept();
 }
 
 void ValueSliders::DoubleSlider::keyPressEvent(QKeyEvent *event) {
-    QWidget::keyPressEvent(event);
     if (typing_) {
+        event->accept();
         if (event->key() == Qt::Key_Escape) {
             stopTyping();
             return;
@@ -183,7 +190,7 @@ void ValueSliders::DoubleSlider::keyPressEvent(QKeyEvent *event) {
             bool ok;
             double newVal = typeInput_.toDouble(&ok);
             if (ok) {
-                setVal(newVal);
+                setVal(int(std::round(newVal)));
             }
             stopTyping();
             return;
@@ -199,12 +206,13 @@ void ValueSliders::DoubleSlider::focusOutEvent(QFocusEvent *event) {
 }
 
 void ValueSliders::DoubleSlider::setVal(double value) {
-    setValue(int(std::round(value * 100.0f)));
     if (allowOutside_) {
         value_ = value;
     } else {
         value_ = std::clamp(value, min_, max_);
     }
+    setValue(int(std::round(value * 100.0f)));
+    setEnabled(true);
     update();
 }
 

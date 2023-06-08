@@ -3,8 +3,8 @@
 #include <QVBoxLayout>
 #include <QLabel>
 
-#include "../include/doubleslider.hpp"
-#include "../include/intslider.hpp"
+#include "doubleslider.hpp"
+#include "intslider.hpp"
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);

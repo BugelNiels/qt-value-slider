@@ -1,10 +1,11 @@
-#include "../include/intslider.hpp"
+#include "intslider.hpp"
+
 #include <QMouseEvent>
 #include <QPainter>
 #include <QTimer>
-
-#include <utility>
 #include <QStyleOptionProgressBar>
+#include <QElapsedTimer>
+#include <utility>
 
 ValueSliders::IntSlider::IntSlider(QString name)
         : name_(std::move(name)) {
@@ -28,10 +29,10 @@ ValueSliders::IntSlider::IntSlider(QString name, int value, int min, int max, bo
 }
 
 void ValueSliders::IntSlider::init() {
+    setFocusPolicy(Qt::StrongFocus);
     setMinimum(min_);
     setMaximum(max_);
     setValue(value_);
-
     blinkerTimer_ = std::make_shared<QTimer>(this);
     connect(blinkerTimer_.get(), &QTimer::timeout, this, &ValueSliders::IntSlider::toggleBlinkerVisibility);
     oldBase_ = palette().color(QPalette::Base);
@@ -48,8 +49,10 @@ QString ValueSliders::IntSlider::text() const {
 
 void ValueSliders::IntSlider::startTyping() {
     setFocus();
+    grabKeyboard();
     select();
     setValue(minimum());
+    setEnabled(true);
     typeInput_ = "";
     typing_ = true;
     blinkerTimer_->start(blinkerInterval_);
@@ -57,9 +60,10 @@ void ValueSliders::IntSlider::startTyping() {
 }
 
 void ValueSliders::IntSlider::stopTyping() {
+    releaseKeyboard();
     blinkerTimer_->stop();
     typing_ = false;
-    setValue(std::clamp(value_, minimum(), maximum()));
+    setVal(value_);
     unselect();
     update();
 }
@@ -126,7 +130,7 @@ void ValueSliders::IntSlider::unselect() {
 }
 
 void ValueSliders::IntSlider::mousePressEvent(QMouseEvent *event) {
-    QProgressBar::mousePressEvent(event);
+    event->accept();
     setFocus();
     if (typing_) {
         stopTyping();
@@ -136,18 +140,19 @@ void ValueSliders::IntSlider::mousePressEvent(QMouseEvent *event) {
 }
 
 void ValueSliders::IntSlider::mouseMoveEvent(QMouseEvent *event) {
-    QProgressBar::mouseMoveEvent(event);
     if (typing_) {
+        event->ignore();
         return;
     }
     if (event->buttons() & Qt::LeftButton) {
         updateValueByPosition(event->pos().x());
         mouseMoved_ = true;
+        event->accept();
+        return;
     }
 }
 
 void ValueSliders::IntSlider::mouseReleaseEvent(QMouseEvent *event) {
-    QProgressBar::mouseReleaseEvent(event);
     if (typing_) {
         return;
     }
@@ -155,11 +160,11 @@ void ValueSliders::IntSlider::mouseReleaseEvent(QMouseEvent *event) {
         if (event->button() == Qt::LeftButton) {
             updateValueByPosition(event->pos().x());
             unselect();
-
         }
     } else {
         startTyping();
     }
+    event->accept();
 }
 
 void ValueSliders::IntSlider::updateValueByPosition(int x) {
@@ -170,11 +175,12 @@ void ValueSliders::IntSlider::updateValueByPosition(int x) {
 
 void ValueSliders::IntSlider::mouseDoubleClickEvent(QMouseEvent *event) {
     startTyping();
+    event->accept();
 }
 
 void ValueSliders::IntSlider::keyPressEvent(QKeyEvent *event) {
-    QWidget::keyPressEvent(event);
     if (typing_) {
+        event->accept();
         if (event->key() == Qt::Key_Escape) {
             stopTyping();
             return;
@@ -199,12 +205,13 @@ void ValueSliders::IntSlider::focusOutEvent(QFocusEvent *event) {
 }
 
 void ValueSliders::IntSlider::setVal(int value) {
-    setValue(value);
     if (allowOutside_) {
         value_ = value;
     } else {
         value_ = std::clamp(value, min_, max_);
     }
+    setValue(value);
+    setEnabled(true);
     update();
 }
 
