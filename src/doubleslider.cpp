@@ -211,7 +211,7 @@ void ValueSliders::DoubleSlider::setVal(double value) {
     } else {
         value_ = std::clamp(value, min_, max_);
     }
-    setValue(int(std::round(value * 100.0f)));
+    setValue(std::clamp(int(std::round(value * 100.0f)), minimum(), maximum()));
     setEnabled(true);
     update();
 }
