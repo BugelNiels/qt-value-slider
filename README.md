@@ -31,23 +31,26 @@ git clone git@github.com:BugelNiels/qt-value-slider.git
 Provided that you cloned this within your project, you should be able to easily add this to any existing CMake projects:
 
 ```cmake
-option(SLIDER_LIBRARY ON)
 add_subdirectory(qt-value-slider)
+
+target_link_libraries(${PROJECT_NAME} PUBLIC valueSliders)
 ```
 
 Alternatively, you can copy-paste the files directly into your project.
 
 Note that due to the fact that the sliders are based on `QProgressBar`, setting/getting the values should be done using
-`getVal()` and `setVal()` respectively.
+`getVal()` and `setVal()` respectively (and not `setValue()`!).
 
-## Running the Demo
+## Compilation
 
-To run the demo, execute the following:
+To compile the library, execute the following:
 
 ```bash
 mkdir build
 cd build
 cmake ..
 make
-./valueSliders
 ```
+
+To run the demo, you can  temporarily change `set(SLIDER_LIBRARY ON)` in the `CMakeLists.txt` to `OFF`.
+This will allow you to generate a `valueSliders` binary.

@@ -14,13 +14,11 @@ find_package(QT NAMES Qt5 Qt6 REQUIRED COMPONENTS Core)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 if (SLIDER_LIBRARY MATCHES ON)
-    message("Adding library")
     add_library(${PROJECT_NAME}
             src/doubleslider.cpp
             src/intslider.cpp
             )
 else ()
-    message("Adding Executable")
     add_executable(${PROJECT_NAME}
             src/doubleslider.cpp
             src/intslider.cpp
