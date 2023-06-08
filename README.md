@@ -19,7 +19,7 @@ The widget layout is inspired by Blender.
 The value sliders can easily be integrated into your project. 
 Start by cloning the repository:
 
-```shell
+```bash
 git clone git@github.com:BugelNiels/qt-value-slider.git
 ```
 
@@ -27,7 +27,18 @@ Provided that you cloned this within your project, you should be able to easily 
 
 ```cmake
 option(SLIDER_LIBRARY ON)
-add_subdirectory(flip)
+add_subdirectory(qt-value-slider)
 ```
 
-Alternatively, you can either copy-paste the files directly into your project.
+Alternatively, you can copy-paste the files directly into your project.
+
+## Running the Demo
+
+To run the demo, execute the following:
+```bash
+mkdir build
+cd build
+cmake ..
+make
+./valueSliders
+```
