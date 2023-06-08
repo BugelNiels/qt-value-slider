@@ -5,6 +5,11 @@ The widget layout is inspired by Blender.
 
 ![QT Value Slider Demo](resources/demo.gif)
 
+## Dependencies
+
+- Qt >6
+- CMake 3.5
+
 ## Features
 
 - Drag left/right to decrease/increase the value.
@@ -12,11 +17,11 @@ The widget layout is inspired by Blender.
 - Displays both the name of the slider and the value.
 - Name is customizable.
 - Slider can be initialized with bounds. Enforcing of these bounds is optional.
-- Integer and double slider support.
+- Integer and double slider support: `IntSlider` and `DoubleSlider`.
 
 ## Usage
 
-The value sliders can easily be integrated into your project. 
+The value sliders can easily be integrated into your project.
 Start by cloning the repository:
 
 ```bash
@@ -32,9 +37,13 @@ add_subdirectory(qt-value-slider)
 
 Alternatively, you can copy-paste the files directly into your project.
 
+Note that due to the fact that the sliders are based on `QProgressBar`, setting/getting the values should be done using
+`getVal()` and `setVal()` respectively.
+
 ## Running the Demo
 
 To run the demo, execute the following:
+
 ```bash
 mkdir build
 cd build
