@@ -23,10 +23,7 @@
  */
 #pragma once
 
-#include <QWidget>
 #include <QProgressBar>
-#include <QLineEdit>
-#include <QElapsedTimer>
 
 namespace ValueSliders {
 
@@ -41,6 +38,7 @@ namespace ValueSliders {
         IntSlider(QString name, int value, int min, int max, bool allowOutside = false);
 
         void setVal(int value);
+
         [[nodiscard]] int getVal() const;
 
     protected:
@@ -65,13 +63,14 @@ namespace ValueSliders {
         const int padding_ = 12;
         const int blinkerInterval_ = 500;
 
-        QColor oldBase_;
 
         bool allowOutside_ = true;
         bool blinkerVisible_ = false;
         bool typing_ = false;
+        bool mouseMoved_ = false;
         std::shared_ptr<QTimer> blinkerTimer_ = nullptr;
         QString typeInput_ = "";
+        QColor oldBase_;
 
         QString name_ = "value";
         int value_ = 50;
@@ -92,6 +91,5 @@ namespace ValueSliders {
 
         void unselect();
 
-        bool mouseMoved_ = false;
     };
 } // ValueSliders
