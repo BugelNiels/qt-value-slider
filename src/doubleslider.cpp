@@ -51,6 +51,7 @@ QString ValueSliders::DoubleSlider::text() const {
 void ValueSliders::DoubleSlider::startTyping() {
     setFocus();
     grabKeyboard();
+    grabMouse();
     select();
     setValue(minimum());
     setEnabled(true);
@@ -62,6 +63,7 @@ void ValueSliders::DoubleSlider::startTyping() {
 
 void ValueSliders::DoubleSlider::stopTyping() {
     releaseKeyboard();
+    releaseMouse();
     blinkerTimer_->stop();
     typing_ = false;
     setVal(value_);
@@ -131,13 +133,13 @@ void ValueSliders::DoubleSlider::unselect() {
 }
 
 void ValueSliders::DoubleSlider::mousePressEvent(QMouseEvent *event) {
-    event->accept();
     setFocus();
     if (typing_) {
         stopTyping();
     }
     select();
     mouseMoved_ = false;
+    event->accept();
 }
 
 void ValueSliders::DoubleSlider::mouseMoveEvent(QMouseEvent *event) {

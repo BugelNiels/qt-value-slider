@@ -33,6 +33,7 @@ void ValueSliders::IntSlider::init() {
     setMinimum(min_);
     setMaximum(max_);
     setValue(value_);
+
     blinkerTimer_ = std::make_shared<QTimer>(this);
     connect(blinkerTimer_.get(), &QTimer::timeout, this, &ValueSliders::IntSlider::toggleBlinkerVisibility);
     oldBase_ = palette().color(QPalette::Base);
@@ -49,6 +50,7 @@ QString ValueSliders::IntSlider::text() const {
 
 void ValueSliders::IntSlider::startTyping() {
     setFocus();
+    grabMouse();
     grabKeyboard();
     select();
     setValue(minimum());
@@ -61,6 +63,7 @@ void ValueSliders::IntSlider::startTyping() {
 
 void ValueSliders::IntSlider::stopTyping() {
     releaseKeyboard();
+    releaseMouse();
     blinkerTimer_->stop();
     typing_ = false;
     setVal(value_);
