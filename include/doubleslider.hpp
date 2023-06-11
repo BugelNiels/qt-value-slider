@@ -73,6 +73,7 @@ namespace ValueSliders {
         std::shared_ptr<QTimer> blinkerTimer_ = nullptr;
         QString typeInput_ = "";
         QColor oldBase_;
+        QString oldSheet_;
 
         QString name_ = "value";
         double value_ = 0.5;
