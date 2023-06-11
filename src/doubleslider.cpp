@@ -37,6 +37,9 @@ void ValueSliders::DoubleSlider::init() {
     blinkerTimer_ = std::make_shared<QTimer>(this);
     connect(blinkerTimer_.get(), &QTimer::timeout, this, &ValueSliders::DoubleSlider::toggleBlinkerVisibility);
     oldBase_ = palette().color(QPalette::Base);
+    QColor disabledColor = palette().color(QPalette::Button);
+    QString disabledSheet = QString("QProgressBar::chunk:disabled { background-color: %1; }").arg(disabledColor.name());
+    setStyleSheet(disabledSheet);
 }
 
 void ValueSliders::DoubleSlider::toggleBlinkerVisibility() {
@@ -51,6 +54,7 @@ QString ValueSliders::DoubleSlider::text() const {
 void ValueSliders::DoubleSlider::startTyping() {
     setFocus();
     grabKeyboard();
+    grabMouse();
     select();
     setValue(minimum());
     setEnabled(true);
@@ -62,6 +66,7 @@ void ValueSliders::DoubleSlider::startTyping() {
 
 void ValueSliders::DoubleSlider::stopTyping() {
     releaseKeyboard();
+    releaseMouse();
     blinkerTimer_->stop();
     typing_ = false;
     setVal(value_);
@@ -131,13 +136,13 @@ void ValueSliders::DoubleSlider::unselect() {
 }
 
 void ValueSliders::DoubleSlider::mousePressEvent(QMouseEvent *event) {
-    event->accept();
     setFocus();
     if (typing_) {
         stopTyping();
     }
     select();
     mouseMoved_ = false;
+    event->accept();
 }
 
 void ValueSliders::DoubleSlider::mouseMoveEvent(QMouseEvent *event) {
@@ -172,6 +177,7 @@ void ValueSliders::DoubleSlider::updateValueByPosition(int x) {
     double ratio = static_cast<double>(x) / width();
     double val = minimum() + ratio * (maximum() - minimum());
     setVal(val / 100.0f);
+    setEnabled(true);
 }
 
 void ValueSliders::DoubleSlider::mouseDoubleClickEvent(QMouseEvent *event) {
@@ -193,6 +199,7 @@ void ValueSliders::DoubleSlider::keyPressEvent(QKeyEvent *event) {
                 setVal(int(std::round(newVal)));
             }
             stopTyping();
+            setEnabled(true);
             return;
         }
         typeInput_ += event->text();
@@ -206,14 +213,18 @@ void ValueSliders::DoubleSlider::focusOutEvent(QFocusEvent *event) {
 }
 
 void ValueSliders::DoubleSlider::setVal(double value) {
+    if(value_ == value) {
+        return;
+    }
     if (allowOutside_) {
         value_ = value;
     } else {
         value_ = std::clamp(value, min_, max_);
     }
     setValue(std::clamp(int(std::round(value * 100.0f)), minimum(), maximum()));
-    setEnabled(true);
     update();
+
+    emit valueChanged(int(std::round(value * 100.0f)));
 }
 
 double ValueSliders::DoubleSlider::getVal() const {
