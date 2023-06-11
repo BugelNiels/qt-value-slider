@@ -37,6 +37,9 @@ void ValueSliders::IntSlider::init() {
     blinkerTimer_ = std::make_shared<QTimer>(this);
     connect(blinkerTimer_.get(), &QTimer::timeout, this, &ValueSliders::IntSlider::toggleBlinkerVisibility);
     oldBase_ = palette().color(QPalette::Base);
+    QColor disabledColor = palette().color(QPalette::Button);
+    QString disabledSheet = QString("QProgressBar::chunk:disabled { background-color: %1; }").arg(disabledColor.name());
+    setStyleSheet(disabledSheet);
 }
 
 void ValueSliders::IntSlider::toggleBlinkerVisibility() {
@@ -174,6 +177,7 @@ void ValueSliders::IntSlider::updateValueByPosition(int x) {
     double ratio = static_cast<double>(x) / width();
     double val = minimum() + ratio * (maximum() - minimum());
     setVal(int(std::round(val)));
+    setEnabled(true);
 }
 
 void ValueSliders::IntSlider::mouseDoubleClickEvent(QMouseEvent *event) {
@@ -186,6 +190,7 @@ void ValueSliders::IntSlider::keyPressEvent(QKeyEvent *event) {
         event->accept();
         if (event->key() == Qt::Key_Escape) {
             stopTyping();
+            setEnabled(true);
             return;
         }
         if (event->key() == Qt::Key_Return) {
@@ -195,6 +200,7 @@ void ValueSliders::IntSlider::keyPressEvent(QKeyEvent *event) {
                 setVal(int(std::round(newVal)));
             }
             stopTyping();
+            setEnabled(true);
             return;
         }
         typeInput_ += event->text();
@@ -208,14 +214,17 @@ void ValueSliders::IntSlider::focusOutEvent(QFocusEvent *event) {
 }
 
 void ValueSliders::IntSlider::setVal(int value) {
+    if(value_ == value) {
+        return;
+    }
     if (allowOutside_) {
         value_ = value;
     } else {
         value_ = std::clamp(value, min_, max_);
     }
     setValue(std::clamp(value, minimum(), maximum()));
-    setEnabled(true);
     update();
+    emit valueChanged(value_);
 }
 
 int ValueSliders::IntSlider::getVal() const {
