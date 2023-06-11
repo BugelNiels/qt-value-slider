@@ -37,9 +37,8 @@ void ValueSliders::DoubleSlider::init() {
     blinkerTimer_ = std::make_shared<QTimer>(this);
     connect(blinkerTimer_.get(), &QTimer::timeout, this, &ValueSliders::DoubleSlider::toggleBlinkerVisibility);
     oldBase_ = palette().color(QPalette::Base);
-    QColor disabledColor = palette().color(QPalette::Button);
-    QString disabledSheet = QString("QProgressBar::chunk:disabled { background-color: %1; }").arg(disabledColor.name());
-    setStyleSheet(disabledSheet);
+    oldSheet_ = styleSheet();
+    setStyleSheet(QString("QProgressBar::chunk:disabled { background-color: %1; }").arg(oldBase_.name()));
 }
 
 void ValueSliders::DoubleSlider::toggleBlinkerVisibility() {
@@ -53,14 +52,14 @@ QString ValueSliders::DoubleSlider::text() const {
 
 void ValueSliders::DoubleSlider::startTyping() {
     setFocus();
-    grabKeyboard();
     grabMouse();
+    grabKeyboard();
     select();
-    setValue(minimum());
     setEnabled(true);
     typeInput_ = "";
     typing_ = true;
     blinkerTimer_->start(blinkerInterval_);
+    setStyleSheet(QString("QProgressBar::chunk { background-color: %1; }").arg(oldBase_.name()));
     update();
 }
 
@@ -70,6 +69,7 @@ void ValueSliders::DoubleSlider::stopTyping() {
     blinkerTimer_->stop();
     typing_ = false;
     setVal(value_);
+    setStyleSheet(oldSheet_);
     unselect();
     update();
 }
@@ -190,9 +190,10 @@ void ValueSliders::DoubleSlider::keyPressEvent(QKeyEvent *event) {
         event->accept();
         if (event->key() == Qt::Key_Escape) {
             stopTyping();
+            setEnabled(true);
             return;
         }
-        if (event->key() == Qt::Key_Return) {
+        if (event->key() == Qt::Key_Return|| event->key() == Qt::Key_Enter) {
             bool ok;
             double newVal = typeInput_.toDouble(&ok);
             if (ok) {
@@ -223,8 +224,7 @@ void ValueSliders::DoubleSlider::setVal(double value) {
     }
     setValue(std::clamp(int(std::round(value * 100.0f)), minimum(), maximum()));
     update();
-
-    emit valueChanged(int(std::round(value * 100.0f)));
+    emit valueChanged(int(std::round(value_ * 100.0f)));
 }
 
 double ValueSliders::DoubleSlider::getVal() const {
