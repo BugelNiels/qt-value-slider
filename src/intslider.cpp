@@ -203,6 +203,11 @@ void ValueSliders::IntSlider::keyPressEvent(QKeyEvent *event) {
             setEnabled(true);
             return;
         }
+        if (event->key() == Qt::Key_Backspace) {
+            typeInput_.chop(1);
+            update();
+            return;
+        }
         typeInput_ += event->text();
         update();
     }

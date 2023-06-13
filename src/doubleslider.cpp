@@ -193,14 +193,19 @@ void ValueSliders::DoubleSlider::keyPressEvent(QKeyEvent *event) {
             setEnabled(true);
             return;
         }
-        if (event->key() == Qt::Key_Return|| event->key() == Qt::Key_Enter) {
+        if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) {
             bool ok;
             double newVal = typeInput_.toDouble(&ok);
             if (ok) {
-                setVal(int(std::round(newVal)));
+                setVal(newVal);
             }
             stopTyping();
             setEnabled(true);
+            return;
+        }
+        if (event->key() == Qt::Key_Backspace) {
+            typeInput_.chop(1);
+            update();
             return;
         }
         typeInput_ += event->text();
@@ -214,7 +219,7 @@ void ValueSliders::DoubleSlider::focusOutEvent(QFocusEvent *event) {
 }
 
 void ValueSliders::DoubleSlider::setVal(double value) {
-    if(value_ == value) {
+    if (value_ == value) {
         return;
     }
     if (allowOutside_) {
