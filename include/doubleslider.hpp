@@ -61,19 +61,22 @@ namespace ValueSliders {
 
         void focusOutEvent(QFocusEvent *event) override;
 
+        void enterEvent(QEnterEvent *event) override;
+
+        void leaveEvent(QEvent *event) override;
+
     private:
         const int padding_ = 12;
         const int blinkerInterval_ = 500;
-
 
         bool allowOutside_ = true;
         bool blinkerVisible_ = false;
         bool typing_ = false;
         bool mouseMoved_ = false;
+        int oldPos_;
+        QPoint startPos_;
         std::shared_ptr<QTimer> blinkerTimer_ = nullptr;
         QString typeInput_ = "";
-        QColor oldBase_;
-        QString oldSheet_;
 
         QString name_ = "value";
         double value_ = 0.5;
@@ -90,9 +93,7 @@ namespace ValueSliders {
 
         void stopTyping();
 
-        void select();
-
-        void unselect();
+        void submitTypedInput();
 
     };
 } // ValueSliders

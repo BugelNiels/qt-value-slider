@@ -6,6 +6,7 @@
 #include <QStyleOptionProgressBar>
 #include <QElapsedTimer>
 #include <utility>
+#include <QApplication>
 
 ValueSliders::DoubleSlider::DoubleSlider(QString name)
         : name_(std::move(name)) {
@@ -36,9 +37,6 @@ void ValueSliders::DoubleSlider::init() {
 
     blinkerTimer_ = std::make_shared<QTimer>(this);
     connect(blinkerTimer_.get(), &QTimer::timeout, this, &ValueSliders::DoubleSlider::toggleBlinkerVisibility);
-    oldBase_ = palette().color(QPalette::Base);
-    oldSheet_ = styleSheet();
-    setStyleSheet(QString("QProgressBar::chunk:disabled { background-color: %1; }").arg(oldBase_.name()));
 }
 
 void ValueSliders::DoubleSlider::toggleBlinkerVisibility() {
@@ -52,25 +50,21 @@ QString ValueSliders::DoubleSlider::text() const {
 
 void ValueSliders::DoubleSlider::startTyping() {
     setFocus();
-    grabMouse();
+    QApplication::setOverrideCursor(Qt::BlankCursor);
     grabKeyboard();
-    select();
     setEnabled(true);
     typeInput_ = "";
     typing_ = true;
     blinkerTimer_->start(blinkerInterval_);
-    setStyleSheet(QString("QProgressBar::chunk { background-color: %1; }").arg(oldBase_.name()));
     update();
 }
 
 void ValueSliders::DoubleSlider::stopTyping() {
     releaseKeyboard();
-    releaseMouse();
+    QApplication::restoreOverrideCursor();
     blinkerTimer_->stop();
     typing_ = false;
     setVal(value_);
-    setStyleSheet(oldSheet_);
-    unselect();
     update();
 }
 
@@ -111,36 +105,28 @@ void ValueSliders::DoubleSlider::paintEvent(QPaintEvent *event) {
 
         painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, nameText);
     } else {
+
+        painter.setPen(palette().color(QPalette::WindowText));
         QRect rect = style()->subElementRect(QStyle::SE_ProgressBarContents, &option, this);
         rect.setX(rect.x() + padding_);
         QString nameText = name_;
         painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, nameText);
 
-        QString valueText = QString::number(value_, 'f', 2);
+        QString valueText = QString::number(value_, 'f', 3);
         QRect valueRect = rect.adjusted(QFontMetrics(font()).horizontalAdvance(nameText), 0, -padding_, 0);
         painter.drawText(valueRect, Qt::AlignRight | Qt::AlignVCenter, valueText);
     }
 
 }
 
-void ValueSliders::DoubleSlider::select() {
-    QPalette curPalette = QProgressBar::palette();
-    curPalette.setColor(QPalette::Base, palette().color(QPalette::AlternateBase));
-    QProgressBar::setPalette(curPalette);
-}
-
-void ValueSliders::DoubleSlider::unselect() {
-    QPalette curPalette = QProgressBar::palette();
-    curPalette.setColor(QPalette::Base, oldBase_);
-    QProgressBar::setPalette(curPalette);
-}
-
 void ValueSliders::DoubleSlider::mousePressEvent(QMouseEvent *event) {
     setFocus();
+    startPos_ = QCursor::pos();
+    oldPos_ = event->pos().x();
     if (typing_) {
-        stopTyping();
+        submitTypedInput();
     }
-    select();
+    QApplication::setOverrideCursor(Qt::BlankCursor);
     mouseMoved_ = false;
     event->accept();
 }
@@ -151,7 +137,9 @@ void ValueSliders::DoubleSlider::mouseMoveEvent(QMouseEvent *event) {
         return;
     }
     if (event->buttons() & Qt::LeftButton) {
-        updateValueByPosition(event->pos().x());
+        int diff = event->pos().x() - oldPos_;
+        QCursor::setPos(startPos_);
+        updateValueByPosition(diff);
         mouseMoved_ = true;
         event->accept();
         return;
@@ -159,13 +147,14 @@ void ValueSliders::DoubleSlider::mouseMoveEvent(QMouseEvent *event) {
 }
 
 void ValueSliders::DoubleSlider::mouseReleaseEvent(QMouseEvent *event) {
+    QApplication::restoreOverrideCursor();
+    QCursor::setPos(startPos_);
     if (typing_) {
         return;
     }
     if (mouseMoved_) {
         if (event->button() == Qt::LeftButton) {
-            updateValueByPosition(event->pos().x());
-            unselect();
+            updateValueByPosition(event->pos().x() - oldPos_);
         }
     } else {
         startTyping();
@@ -175,8 +164,8 @@ void ValueSliders::DoubleSlider::mouseReleaseEvent(QMouseEvent *event) {
 
 void ValueSliders::DoubleSlider::updateValueByPosition(int x) {
     double ratio = static_cast<double>(x) / width();
-    double val = minimum() + ratio * (maximum() - minimum());
-    setVal(val / 100.0f);
+    double val = ratio * (maximum() - minimum());
+    setVal(value_ + val / 100.0f);
     setEnabled(true);
 }
 
@@ -194,13 +183,7 @@ void ValueSliders::DoubleSlider::keyPressEvent(QKeyEvent *event) {
             return;
         }
         if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) {
-            bool ok;
-            double newVal = typeInput_.toDouble(&ok);
-            if (ok) {
-                setVal(newVal);
-            }
-            stopTyping();
-            setEnabled(true);
+            submitTypedInput();
             return;
         }
         if (event->key() == Qt::Key_Backspace) {
@@ -213,9 +196,21 @@ void ValueSliders::DoubleSlider::keyPressEvent(QKeyEvent *event) {
     }
 }
 
+void ValueSliders::DoubleSlider::submitTypedInput() {
+    bool ok;
+    double newVal = typeInput_.toDouble(&ok);
+    if (ok) {
+        setVal(newVal);
+    }
+    stopTyping();
+    setEnabled(true);
+}
+
 void ValueSliders::DoubleSlider::focusOutEvent(QFocusEvent *event) {
     QWidget::focusOutEvent(event);
-    stopTyping();
+    if(typing_) {
+        stopTyping();
+    }
 }
 
 void ValueSliders::DoubleSlider::setVal(double value) {
@@ -234,4 +229,14 @@ void ValueSliders::DoubleSlider::setVal(double value) {
 
 double ValueSliders::DoubleSlider::getVal() const {
     return value_;
+}
+
+void ValueSliders::DoubleSlider::enterEvent(QEnterEvent *event) {
+    QWidget::enterEvent(event);
+    QApplication::setOverrideCursor(Qt::SizeHorCursor);
+}
+
+void ValueSliders::DoubleSlider::leaveEvent(QEvent *event) {
+    QWidget::leaveEvent(event);
+    QApplication::restoreOverrideCursor();
 }
