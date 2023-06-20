@@ -21,8 +21,8 @@ int main(int argc, char *argv[]) {
     layout.addWidget(new ValueSliders::DoubleSlider("Double"));
     layout.addWidget(new ValueSliders::IntSlider("Integer"));
 
-    layout.addWidget(new ValueSliders::DoubleSlider("Bounded Double", 50, 0, 100, false));
-    layout.addWidget(new ValueSliders::IntSlider("Custom Name", 0, -50, 50, false));
+    layout.addWidget(new ValueSliders::DoubleSlider("Bounded Double", 50, 0, 100));
+    layout.addWidget(new ValueSliders::IntSlider("Custom Name", 0, -50, 50));
 
     w.setCentralWidget(&wrapper);
 

@@ -23,75 +23,38 @@
  */
 #pragma once
 
-#include <QProgressBar>
+#include "valueslider.hpp"
 
 namespace ValueSliders {
 
-    class IntSlider : public QProgressBar {
+    class IntSlider : public ValueSlider<int> {
+    Q_OBJECT
     public:
-        IntSlider() = default;
-
-        explicit IntSlider(QString name);
-
         IntSlider(QString name, int value);
 
-        IntSlider(QString name, int value, int min, int max, bool allowOutside = false);
+        IntSlider(QString name, int value, int bound, BoundMode boundMode = BoundMode::LOWER_ONLY);
 
-        void setVal(int value);
+        IntSlider(QString name, int value, int min, int max, BoundMode boundMode = BoundMode::UPPER_LOWER);
 
-        [[nodiscard]] int getVal() const;
+        [[nodiscard]] int transform(int val) const override;
 
-    protected:
+        int convertString(const QString &string, bool &ok) override;
 
-        void mouseDoubleClickEvent(QMouseEvent *event) override;
+        [[nodiscard]] QString createString(int val) const override;
+
+        void emitValueUpdated(int val) override;
+
+        [[nodiscard]] int getValueByPosition(int x) override;
 
         void mousePressEvent(QMouseEvent *event) override;
 
-        void mouseMoveEvent(QMouseEvent *event) override;
+    Q_SIGNALS:
 
-        void mouseReleaseEvent(QMouseEvent *event) override;
-
-        void keyPressEvent(QKeyEvent *event) override;
-
-        [[nodiscard]] QString text() const override;
-
-        void paintEvent(QPaintEvent *event) override;
-
-        void focusOutEvent(QFocusEvent *event) override;
-
-        void enterEvent(QEnterEvent *event);
-
-        void leaveEvent(QEvent *event);
+        void valueUpdated(int value);
 
     private:
-        const int padding_ = 12;
-        const int blinkerInterval_ = 500;
-
-        bool allowOutside_ = true;
-        bool blinkerVisible_ = false;
-        bool typing_ = false;
-        bool mouseMoved_ = false;
-        int oldPos_;
-        QPoint startPos_;
-        std::shared_ptr<QTimer> blinkerTimer_ = nullptr;
-        QString typeInput_ = "";
-        QString name_ = "value";
-        int value_ = 50;
         double moveValue_;
-        int min_ = 0;
-        int max_ = 100;
 
-        void updateValueByPosition(int x);
-
-        void init();
-
-        void toggleBlinkerVisibility();
-
-        void startTyping();
-
-        void stopTyping();
-
-        void submitTypedInput();
-
+        void updateBounds();
     };
 } // ValueSliders
