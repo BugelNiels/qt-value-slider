@@ -162,7 +162,7 @@ template<class T>
 int ValueSliders::ValueSlider<T>::getXPosByVal() const {
     double val = std::clamp(transform(value_), minimum(), maximum());
     double ratio = val / (maximum() - minimum());
-    int xOffset = std::clamp(int(ratio * width()) - padding_, 0, width() - padding_);
+    int xOffset = std::clamp(int(ratio * width()), padding_, width() - padding_);
     return mapToGlobal(pos()).x() + xOffset;
 }
 
@@ -171,13 +171,23 @@ void ValueSliders::ValueSlider<T>::mouseReleaseEvent(QMouseEvent *event) {
     if (typing_) {
         return;
     }
-    QApplication::restoreOverrideCursor();
     if (mouseMoved_) {
         if (event->button() == Qt::LeftButton) {
-            QCursor::setPos(startPos_);
+            if (boundMode_ == BoundMode::UPPER_LOWER) {
+                auto pos = startPos_;
+                pos.setX(getXPosByVal());
+                QCursor::setPos(pos);
+            } else {
+                QCursor::setPos(startPos_);
+            }
             updateValueByPosition(event->pos().x() - oldPos_);
+            QApplication::restoreOverrideCursor();
+            if (underMouse()) {
+                QApplication::setOverrideCursor(Qt::SizeHorCursor);
+            }
         }
     } else {
+        QApplication::restoreOverrideCursor();
         startTyping();
     }
     event->accept();
