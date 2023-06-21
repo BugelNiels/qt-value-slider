@@ -15,15 +15,22 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 if (SLIDER_LIBRARY MATCHES ON)
     add_library(${PROJECT_NAME}
+            include/doubleslider.hpp
+            include/intslider.hpp
+            include/valueslider.hpp
             src/doubleslider.cpp
             src/intslider.cpp
+            src/valueslider.cpp
             )
 else ()
     add_executable(${PROJECT_NAME}
+            include/doubleslider.hpp
+            include/intslider.hpp
+            include/valueslider.hpp
             src/doubleslider.cpp
             src/intslider.cpp
-            src/demo.cpp
-            )
+            src/valueslider.cpp
+            src/demo.cpp)
 endif ()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
