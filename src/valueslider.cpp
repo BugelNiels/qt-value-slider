@@ -25,26 +25,6 @@ ValueSliders::ValueSlider<T>::ValueSlider(QString name, T value)
     init();
 }
 
-
-template<class T>
-ValueSliders::ValueSlider<T>::ValueSlider(QString name, T value, T bound, BoundMode boundMode)
-        : boundMode_(boundMode),
-          name_(std::move(name)),
-          value_(value) {
-    init();
-
-    if (boundMode == BoundMode::UPPER_ONLY) {
-        min_ = value * 2;
-        max_ = bound;
-    } else if (boundMode == BoundMode::LOWER_ONLY) {
-        min_ = bound;
-        max_ = value * 2;
-    } else {
-        throw std::invalid_argument(
-                "Cannot only instantiate a single bound slider with bound mode UPPER_ONLY or LOWER_ONLY.\n");
-    }
-}
-
 template<class T>
 ValueSliders::ValueSlider<T>::ValueSlider(QString name, T value, T min, T max, BoundMode boundMode)
         : boundMode_(boundMode),
@@ -52,6 +32,12 @@ ValueSliders::ValueSlider<T>::ValueSlider(QString name, T value, T min, T max, B
           value_(value),
           min_(min),
           max_(max) {
+
+    if (min > max) {
+        throw std::invalid_argument(
+                QString("ValueSlider min val cannot be greater than max val.\nMin: %1\nMax: %2\n").arg(min,
+                                                                                                       max).toStdString());
+    }
     init();
 }
 
@@ -76,7 +62,7 @@ QString ValueSliders::ValueSlider<T>::text() const {
 template<class T>
 void ValueSliders::ValueSlider<T>::startTyping() {
     setFocus();
-    QApplication::setOverrideCursor(Qt::BlankCursor);
+    QApplication::setOverrideCursor(Qt::IBeamCursor);
     grabKeyboard();
     setEnabled(true);
     typeInput_ = "";
@@ -148,20 +134,19 @@ void ValueSliders::ValueSlider<T>::paintEvent(QPaintEvent *event) {
 template<class T>
 void ValueSliders::ValueSlider<T>::mousePressEvent(QMouseEvent *event) {
     setFocus();
-    startPos_ = QCursor::pos();
-    oldPos_ = event->pos().x();
     if (typing_) {
-        submitTypedInput();
+        return;
     }
     QApplication::setOverrideCursor(Qt::BlankCursor);
+
+    startPos_ = QCursor::pos();
+    oldPos_ = event->pos().x();
     mouseMoved_ = false;
-    event->accept();
 }
 
 template<class T>
 void ValueSliders::ValueSlider<T>::mouseMoveEvent(QMouseEvent *event) {
     if (typing_) {
-        event->ignore();
         return;
     }
     if (event->buttons() & Qt::LeftButton) {
@@ -169,7 +154,6 @@ void ValueSliders::ValueSlider<T>::mouseMoveEvent(QMouseEvent *event) {
         QCursor::setPos(startPos_);
         updateValueByPosition(diff);
         mouseMoved_ = true;
-        event->accept();
         return;
     }
 }
@@ -184,15 +168,13 @@ int ValueSliders::ValueSlider<T>::getXPosByVal() const {
 
 template<class T>
 void ValueSliders::ValueSlider<T>::mouseReleaseEvent(QMouseEvent *event) {
-    QApplication::restoreOverrideCursor();
     if (typing_) {
         return;
     }
+    QApplication::restoreOverrideCursor();
     if (mouseMoved_) {
         if (event->button() == Qt::LeftButton) {
-            auto pos = startPos_;
-            pos.setX(getXPosByVal());
-            QCursor::setPos(pos);
+            QCursor::setPos(startPos_);
             updateValueByPosition(event->pos().x() - oldPos_);
         }
     } else {
@@ -212,8 +194,9 @@ void ValueSliders::ValueSlider<T>::updateValueByPosition(int x) {
 
 template<class T>
 void ValueSliders::ValueSlider<T>::mouseDoubleClickEvent(QMouseEvent *event) {
-    startTyping();
-    event->accept();
+    if (!typing_) {
+        startTyping();
+    }
 }
 
 template<class T>
@@ -248,13 +231,33 @@ void ValueSliders::ValueSlider<T>::submitTypedInput() {
     }
     stopTyping();
     setEnabled(true);
+    QApplication::restoreOverrideCursor();
+    if (underMouse()) {
+        QApplication::setOverrideCursor(Qt::SizeHorCursor);
+    }
 }
 
 template<class T>
 void ValueSliders::ValueSlider<T>::focusOutEvent(QFocusEvent *event) {
-    QWidget::focusOutEvent(event);
     if (typing_) {
-        stopTyping();
+        submitTypedInput();
+    }
+    QApplication::restoreOverrideCursor();
+}
+
+template<class T>
+T ValueSliders::ValueSlider<T>::boundVal(T value) const {
+    switch (boundMode_) {
+        case BoundMode::UNCHECKED:
+            return value;
+        case BoundMode::LOWER_ONLY:
+            return std::max(value, min_);
+        case BoundMode::UPPER_ONLY:
+            return std::min(value, max_);
+        case BoundMode::UPPER_LOWER:
+            return std::clamp(value, min_, max_);
+        default:
+            return value;
     }
 }
 
@@ -263,21 +266,10 @@ void ValueSliders::ValueSlider<T>::setVal(T value) {
     if (value_ == value) {
         return;
     }
-    switch (boundMode_) {
-        case BoundMode::UNCHECKED:
-            value_ = value;
-            break;
-        case BoundMode::LOWER_ONLY:
-            value_ = std::max(value, min_);
-            break;
-        case BoundMode::UPPER_ONLY:
-            value_ = std::min(value, max_);
-            break;
-        case BoundMode::UPPER_LOWER:
-            value_ = std::clamp(value, min_, max_);
-            break;
+    value_ = boundVal(value);
+    if (boundMode_ == BoundMode::UPPER_LOWER) {
+        setValue(std::clamp(transform(value_), minimum(), maximum()));
     }
-    setValue(std::clamp(transform(value_), minimum(), maximum()));
     emitValueUpdated(value_);
     update();
 }

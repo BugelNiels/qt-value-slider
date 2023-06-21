@@ -10,11 +10,6 @@ ValueSliders::IntSlider::IntSlider(QString name, int value) : ValueSlider(std::m
     updateBounds();
 }
 
-ValueSliders::IntSlider::IntSlider(QString name, int value, int bound, ValueSliders::BoundMode boundMode)
-        : ValueSlider(std::move(name), value, bound, boundMode) {
-    updateBounds();
-}
-
 ValueSliders::IntSlider::IntSlider(QString name, int value, int min, int max,
                                    ValueSliders::BoundMode boundMode) : ValueSlider(std::move(name), value, min,
                                                                                     max,
@@ -26,7 +21,11 @@ void ValueSliders::IntSlider::updateBounds() {
 
     setMinimum(min_);
     setMaximum(max_);
-    setValue(value_);
+    if(boundMode_ == BoundMode::UPPER_LOWER) {
+        setValue(value_);
+    } else {
+        setValue(minimum());
+    }
 }
 
 
@@ -50,6 +49,19 @@ int ValueSliders::IntSlider::getValueByPosition(int x) {
     double ratio = static_cast<double>(x) / width();
     double val = ratio * (maximum() - minimum());
     moveValue_ += val;
+    switch (boundMode_) {
+        case BoundMode::LOWER_ONLY:
+            moveValue_ = std::max(moveValue_, double(min_) - 1.0);
+            break;
+        case BoundMode::UPPER_ONLY:
+            moveValue_ = std::min(moveValue_, double(max_) - 1.0);
+            break;
+        case BoundMode::UPPER_LOWER:
+            moveValue_ = std::clamp(moveValue_, double(min_) - 1.0, double(max_) + 1.0);
+            break;
+        default:
+            break;
+    }
     return int(std::round(moveValue_));
 }
 

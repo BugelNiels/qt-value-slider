@@ -33,8 +33,6 @@ namespace ValueSliders {
     public:
         DoubleSlider(QString name, double value);
 
-        DoubleSlider(QString name, double value, double bound, BoundMode boundMode = BoundMode::LOWER_ONLY);
-
         DoubleSlider(QString name, double value, double min, double max, BoundMode boundMode = BoundMode::UPPER_LOWER);
 
         [[nodiscard]] int transform(double val) const override;

@@ -7,11 +7,6 @@ ValueSliders::DoubleSlider::DoubleSlider(QString name, double value) : ValueSlid
     updateBounds();
 }
 
-ValueSliders::DoubleSlider::DoubleSlider(QString name, double value, double bound, ValueSliders::BoundMode boundMode)
-        : ValueSlider(std::move(name), value, bound, boundMode) {
-    updateBounds();
-}
-
 ValueSliders::DoubleSlider::DoubleSlider(QString name, double value, double min, double max,
                                          ValueSliders::BoundMode boundMode) : ValueSlider(std::move(name), value, min,
                                                                                           max,
@@ -22,7 +17,11 @@ ValueSliders::DoubleSlider::DoubleSlider(QString name, double value, double min,
 void ValueSliders::DoubleSlider::updateBounds() {
     setMinimum(int(std::round(min_ * 100.0)));
     setMaximum(int(std::round(max_ * 100.0)));
-    setValue(int(std::round(value_ * 100.0)));
+    if(boundMode_ == BoundMode::UPPER_LOWER) {
+        setValue(int(std::round(value_ * 100.0)));
+    } else {
+        setValue(minimum());
+    }
 }
 
 int ValueSliders::DoubleSlider::transform(double val) const {

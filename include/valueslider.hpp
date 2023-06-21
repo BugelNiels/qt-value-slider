@@ -39,13 +39,13 @@ namespace ValueSliders {
     public:
         ValueSlider(QString name, T value);
 
-        ValueSlider(QString name, T value, T bound, BoundMode boundMode = BoundMode::LOWER_ONLY);
-
-        ValueSlider(QString name, T value, T min, T max, BoundMode boundMode = BoundMode::UPPER_LOWER);
+        ValueSlider(QString name, T value, T min, T max, BoundMode boundMode);
 
         void setVal(T value);
 
         [[nodiscard]] T getVal() const;
+
+        [[nodiscard]] T boundVal(T value) const;
 
     protected:
 
@@ -79,17 +79,17 @@ namespace ValueSliders {
 
         virtual T getValueByPosition(int x) = 0;
 
-    protected:
 
+    protected:
         T value_;
         T min_;
         T max_;
+        BoundMode boundMode_ = BoundMode::UNCHECKED;
 
     private:
         const int padding_ = 12;
         const int blinkerInterval_ = 500;
 
-        BoundMode boundMode_ = BoundMode::UNCHECKED;
         bool blinkerVisible_ = false;
         bool typing_ = false;
         bool mouseMoved_ = false;

@@ -32,8 +32,6 @@ namespace ValueSliders {
     public:
         IntSlider(QString name, int value);
 
-        IntSlider(QString name, int value, int bound, BoundMode boundMode = BoundMode::LOWER_ONLY);
-
         IntSlider(QString name, int value, int min, int max, BoundMode boundMode = BoundMode::UPPER_LOWER);
 
         [[nodiscard]] int transform(int val) const override;
