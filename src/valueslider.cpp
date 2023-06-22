@@ -182,7 +182,7 @@ void ValueSliders::ValueSlider<T>::mouseReleaseEvent(QMouseEvent *event) {
             }
             updateValueByPosition(event->pos().x() - oldPos_);
             QApplication::restoreOverrideCursor();
-            if (underMouse()) {
+            if (underMouse() && QApplication::overrideCursor() == nullptr) {
                 QApplication::setOverrideCursor(Qt::SizeHorCursor);
             }
         }
@@ -190,7 +190,6 @@ void ValueSliders::ValueSlider<T>::mouseReleaseEvent(QMouseEvent *event) {
         QApplication::restoreOverrideCursor();
         startTyping();
     }
-    event->accept();
 }
 
 template<class T>
