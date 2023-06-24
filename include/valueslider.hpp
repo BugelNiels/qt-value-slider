@@ -41,6 +41,8 @@ namespace ValueSliders {
 
         ValueSlider(QString name, T value, T min, T max, BoundMode boundMode);
 
+        ~ValueSlider() override;
+
         void setVal(T value);
 
         [[nodiscard]] T getVal() const;
@@ -113,5 +115,6 @@ namespace ValueSliders {
 
         [[nodiscard]] int getXPosByVal() const;
 
+        bool slidingHover_ = false;
     };
 } // ValueSliders

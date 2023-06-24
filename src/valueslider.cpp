@@ -41,6 +41,14 @@ ValueSliders::ValueSlider<T>::ValueSlider(QString name, T value, T min, T max, B
     init();
 }
 
+
+template<class T>
+ValueSliders::ValueSlider<T>::~ValueSlider() {
+    if (slidingHover_) {
+        QApplication::restoreOverrideCursor();
+    }
+}
+
 template<class T>
 void ValueSliders::ValueSlider<T>::init() {
     setFocusPolicy(Qt::StrongFocus);
@@ -173,24 +181,14 @@ void ValueSliders::ValueSlider<T>::mouseReleaseEvent(QMouseEvent *event) {
     }
     if (mouseMoved_) {
         if (event->button() == Qt::LeftButton) {
-            if (boundMode_ == BoundMode::UPPER_LOWER) {
-                auto pos = startPos_;
-                pos.setX(getXPosByVal());
-                QCursor::setPos(pos);
-            } else {
-                QCursor::setPos(startPos_);
-            }
+            QCursor::setPos(startPos_);
             updateValueByPosition(event->pos().x() - oldPos_);
             QApplication::restoreOverrideCursor();
-            if (underMouse()) {
-                QApplication::setOverrideCursor(Qt::SizeHorCursor);
-            }
         }
     } else {
         QApplication::restoreOverrideCursor();
         startTyping();
     }
-    event->accept();
 }
 
 template<class T>
@@ -242,8 +240,11 @@ void ValueSliders::ValueSlider<T>::submitTypedInput() {
     stopTyping();
     setEnabled(true);
     QApplication::restoreOverrideCursor();
-    if (underMouse()) {
+    if (underMouse() && !slidingHover_) {
         QApplication::setOverrideCursor(Qt::SizeHorCursor);
+        slidingHover_ = true;
+    } else {
+        slidingHover_ = false;
     }
 }
 
@@ -252,7 +253,10 @@ void ValueSliders::ValueSlider<T>::focusOutEvent(QFocusEvent *event) {
     if (typing_) {
         submitTypedInput();
     }
-    QApplication::restoreOverrideCursor();
+    if (slidingHover_) {
+        QApplication::restoreOverrideCursor();
+        slidingHover_ = false;
+    }
 }
 
 template<class T>
@@ -291,18 +295,19 @@ T ValueSliders::ValueSlider<T>::getVal() const {
 
 template<class T>
 void ValueSliders::ValueSlider<T>::enterEvent(QEnterEvent *event) {
-    if (!typing_) {
+    if (!typing_ && !slidingHover_) {
         QApplication::setOverrideCursor(Qt::SizeHorCursor);
+        slidingHover_ = true;
     }
 }
 
 template<class T>
 void ValueSliders::ValueSlider<T>::leaveEvent(QEvent *event) {
-    if (!typing_) {
+    if (!typing_ && slidingHover_) {
         QApplication::restoreOverrideCursor();
+        slidingHover_ = false;
     }
 }
-
 
 template
 class ValueSliders::ValueSlider<int>;
