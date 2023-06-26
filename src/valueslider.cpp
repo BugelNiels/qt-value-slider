@@ -145,11 +145,12 @@ void ValueSliders::ValueSlider<T>::mousePressEvent(QMouseEvent *event) {
     if (typing_) {
         return;
     }
-    QApplication::setOverrideCursor(Qt::BlankCursor);
-
-    startPos_ = QCursor::pos();
-    oldPos_ = event->pos().x();
-    mouseMoved_ = false;
+    if (event->button() == Qt::LeftButton) {
+        QApplication::setOverrideCursor(Qt::BlankCursor);
+        startPos_ = QCursor::pos();
+        oldPos_ = event->pos().x();
+        mouseMoved_ = false;
+    }
 }
 
 template<class T>
@@ -176,18 +177,17 @@ int ValueSliders::ValueSlider<T>::getXPosByVal() const {
 
 template<class T>
 void ValueSliders::ValueSlider<T>::mouseReleaseEvent(QMouseEvent *event) {
-    if (typing_) {
-        return;
-    }
     if (mouseMoved_) {
         if (event->button() == Qt::LeftButton) {
             QCursor::setPos(startPos_);
             updateValueByPosition(event->pos().x() - oldPos_);
-            QApplication::restoreOverrideCursor();
         }
+        QApplication::restoreOverrideCursor();
     } else {
         QApplication::restoreOverrideCursor();
-        startTyping();
+        if (!typing_) {
+            startTyping();
+        }
     }
 }
 
@@ -202,7 +202,7 @@ void ValueSliders::ValueSlider<T>::updateValueByPosition(int x) {
 
 template<class T>
 void ValueSliders::ValueSlider<T>::mouseDoubleClickEvent(QMouseEvent *event) {
-    if (!typing_) {
+    if (event->button() == Qt::LeftButton && !typing_) {
         startTyping();
     }
 }
@@ -253,10 +253,8 @@ void ValueSliders::ValueSlider<T>::focusOutEvent(QFocusEvent *event) {
     if (typing_) {
         submitTypedInput();
     }
-    if (slidingHover_) {
-        QApplication::restoreOverrideCursor();
-        slidingHover_ = false;
-    }
+    QApplication::restoreOverrideCursor();
+    slidingHover_ = false;
 }
 
 template<class T>
@@ -303,7 +301,7 @@ void ValueSliders::ValueSlider<T>::enterEvent(QEnterEvent *event) {
 
 template<class T>
 void ValueSliders::ValueSlider<T>::leaveEvent(QEvent *event) {
-    if (!typing_ && slidingHover_) {
+    if (!typing_) {
         QApplication::restoreOverrideCursor();
         slidingHover_ = false;
     }
