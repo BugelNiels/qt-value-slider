@@ -49,6 +49,8 @@ namespace ValueSliders {
 
         [[nodiscard]] T boundVal(T value) const;
 
+        void setStepSize(T step);
+
     protected:
 
         void mouseDoubleClickEvent(QMouseEvent *event) override;
@@ -58,6 +60,8 @@ namespace ValueSliders {
         void mouseMoveEvent(QMouseEvent *event) override;
 
         void mouseReleaseEvent(QMouseEvent *event) override;
+
+        void wheelEvent(QWheelEvent *event) override;
 
         void keyPressEvent(QKeyEvent *event) override;
 
@@ -86,6 +90,7 @@ namespace ValueSliders {
         T value_;
         T min_;
         T max_;
+        T stepSize_;
         BoundMode boundMode_ = BoundMode::UNCHECKED;
 
     private:

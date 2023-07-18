@@ -26,6 +26,7 @@ void ValueSliders::IntSlider::updateBounds() {
     } else {
         setValue(minimum());
     }
+    stepSize_ = 1;
 }
 
 

@@ -17,11 +17,12 @@ ValueSliders::DoubleSlider::DoubleSlider(QString name, double value, double min,
 void ValueSliders::DoubleSlider::updateBounds() {
     setMinimum(int(std::round(min_ * 100.0)));
     setMaximum(int(std::round(max_ * 100.0)));
-    if(boundMode_ == BoundMode::UPPER_LOWER) {
+    if (boundMode_ == BoundMode::UPPER_LOWER) {
         setValue(int(std::round(value_ * 100.0)));
     } else {
         setValue(minimum());
     }
+    stepSize_ = (max_ - min_) / 100.0;
 }
 
 int ValueSliders::DoubleSlider::transform(double val) const {
@@ -41,7 +42,6 @@ void ValueSliders::DoubleSlider::emitValueUpdated(double val) {
 }
 
 double ValueSliders::DoubleSlider::getValueByPosition(int x) {
-    double ratio = static_cast<double>(x) / width();
-    double val = ratio * (maximum() - minimum());
-    return value_ + val / 100.0;
+    double val = x * stepSize_;
+    return value_ + val;
 }

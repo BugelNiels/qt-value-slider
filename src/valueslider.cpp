@@ -139,6 +139,13 @@ void ValueSliders::ValueSlider<T>::paintEvent(QPaintEvent *event) {
 
 }
 
+
+
+template<class T>
+void ValueSliders::ValueSlider<T>::setStepSize(T step) {
+    stepSize_ = step;
+}
+
 template<class T>
 void ValueSliders::ValueSlider<T>::mousePressEvent(QMouseEvent *event) {
     setFocus();
@@ -204,6 +211,16 @@ template<class T>
 void ValueSliders::ValueSlider<T>::mouseDoubleClickEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton && !typing_) {
         startTyping();
+    }
+}
+
+
+template<class T>
+void ValueSliders::ValueSlider<T>::wheelEvent(QWheelEvent *event) {
+    if(event->angleDelta().y() > 0) {
+        setVal(value_ + stepSize_);
+    } else {
+        setVal(value_ - stepSize_);
     }
 }
 
