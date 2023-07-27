@@ -1,20 +1,20 @@
-#include "doubleslider.hpp"
+#include <doubleslider.hpp>
 
-#include <utility>
 #include <QDebug>
+#include <utility>
 
-ValueSliders::DoubleSlider::DoubleSlider(QString name, double value) : ValueSlider(std::move(name), value) {
+namespace ValueSliders {
+
+DoubleSlider::DoubleSlider(QString name, double value) : ValueSlider(std::move(name), value) {
     updateBounds();
 }
 
-ValueSliders::DoubleSlider::DoubleSlider(QString name, double value, double min, double max,
-                                         ValueSliders::BoundMode boundMode) : ValueSlider(std::move(name), value, min,
-                                                                                          max,
-                                                                                          boundMode) {
+DoubleSlider::DoubleSlider(QString name, double value, double min, double max, BoundMode boundMode)
+    : ValueSlider(std::move(name), value, min, max, boundMode) {
     updateBounds();
 }
 
-void ValueSliders::DoubleSlider::updateBounds() {
+void DoubleSlider::updateBounds() {
     setMinimum(int(std::round(min_ * 100.0)));
     setMaximum(int(std::round(max_ * 100.0)));
     if (boundMode_ == BoundMode::UPPER_LOWER) {
@@ -25,23 +25,25 @@ void ValueSliders::DoubleSlider::updateBounds() {
     stepSize_ = (max_ - min_) / 100.0;
 }
 
-int ValueSliders::DoubleSlider::transform(double val) const {
+int DoubleSlider::transform(double val) const {
     return int(std::round(val * 100.0));
 }
 
-double ValueSliders::DoubleSlider::convertString(const QString &string, bool &ok) {
+double DoubleSlider::convertString(const QString &string, bool &ok) {
     return string.toDouble(&ok);
 }
 
-QString ValueSliders::DoubleSlider::createString(double val) const {
+QString DoubleSlider::createString(double val) const {
     return QString::number(val, 'f', 3);
 }
 
-void ValueSliders::DoubleSlider::emitValueUpdated(double val) {
+void DoubleSlider::emitValueUpdated(double val) {
     emit valueUpdated(val);
 }
 
-double ValueSliders::DoubleSlider::getValueByPosition(int x) {
+double DoubleSlider::getValueByPosition(int x) {
     double val = x * stepSize_;
     return value_ + val;
 }
+
+} // namespace ValueSliders

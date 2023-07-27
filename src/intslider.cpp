@@ -1,27 +1,27 @@
-#include "intslider.hpp"
+#include <intslider.hpp>
 
+#include <QApplication>
 #include <QMouseEvent>
 #include <QPainter>
-#include <QTimer>
 #include <QStyleOptionProgressBar>
-#include <QApplication>
+#include <QTimer>
 
-ValueSliders::IntSlider::IntSlider(QString name, int value) : ValueSlider(std::move(name), value) {
+namespace ValueSliders {
+
+IntSlider::IntSlider(QString name, int value) : ValueSlider(std::move(name), value) {
     updateBounds();
 }
 
-ValueSliders::IntSlider::IntSlider(QString name, int value, int min, int max,
-                                   ValueSliders::BoundMode boundMode) : ValueSlider(std::move(name), value, min,
-                                                                                    max,
-                                                                                    boundMode) {
+IntSlider::IntSlider(QString name, int value, int min, int max, BoundMode boundMode)
+    : ValueSlider(std::move(name), value, min, max, boundMode) {
     updateBounds();
 }
 
-void ValueSliders::IntSlider::updateBounds() {
+void IntSlider::updateBounds() {
 
     setMinimum(min_);
     setMaximum(max_);
-    if(boundMode_ == BoundMode::UPPER_LOWER) {
+    if (boundMode_ == BoundMode::UPPER_LOWER) {
         setValue(value_);
     } else {
         setValue(minimum());
@@ -29,24 +29,23 @@ void ValueSliders::IntSlider::updateBounds() {
     stepSize_ = 1;
 }
 
-
-int ValueSliders::IntSlider::transform(int val) const {
+int IntSlider::transform(int val) const {
     return val;
 }
 
-int ValueSliders::IntSlider::convertString(const QString &string, bool &ok) {
+int IntSlider::convertString(const QString &string, bool &ok) {
     return string.toInt(&ok);
 }
 
-QString ValueSliders::IntSlider::createString(int val) const {
+QString IntSlider::createString(int val) const {
     return QString::number(val);
 }
 
-void ValueSliders::IntSlider::emitValueUpdated(int val) {
+void IntSlider::emitValueUpdated(int val) {
     emit valueUpdated(val);
 }
 
-int ValueSliders::IntSlider::getValueByPosition(int x) {
+int IntSlider::getValueByPosition(int x) {
     double ratio = static_cast<double>(x) / width();
     double val = ratio * (maximum() - minimum());
     moveValue_ += val;
@@ -66,7 +65,9 @@ int ValueSliders::IntSlider::getValueByPosition(int x) {
     return int(std::round(moveValue_));
 }
 
-void ValueSliders::IntSlider::mousePressEvent(QMouseEvent *event) {
+void IntSlider::mousePressEvent(QMouseEvent *event) {
     ValueSlider::mousePressEvent(event);
     moveValue_ = value_;
 }
+
+} // namespace ValueSliders

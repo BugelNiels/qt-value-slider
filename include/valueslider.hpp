@@ -27,99 +27,93 @@
 
 namespace ValueSliders {
 
-    enum class BoundMode {
-        UNCHECKED,
-        UPPER_ONLY,
-        LOWER_ONLY,
-        UPPER_LOWER
-    };
+enum class BoundMode { UNCHECKED, UPPER_ONLY, LOWER_ONLY, UPPER_LOWER };
 
-    template<class T>
-    class ValueSlider : public QProgressBar {
-    public:
-        ValueSlider(QString name, T value);
+template<class T>
+class ValueSlider : public QProgressBar {
+public:
+    ValueSlider(QString name, T value);
 
-        ValueSlider(QString name, T value, T min, T max, BoundMode boundMode);
+    ValueSlider(QString name, T value, T min, T max, BoundMode boundMode);
 
-        ~ValueSlider() override;
+    ~ValueSlider() override;
 
-        void setVal(T value);
+    void setVal(T value);
 
-        [[nodiscard]] T getVal() const;
+    [[nodiscard]] T getVal() const;
 
-        [[nodiscard]] T boundVal(T value) const;
+    [[nodiscard]] T boundVal(T value) const;
 
-        void setStepSize(T step);
+    void setStepSize(T step);
 
-    protected:
+protected:
+    void mouseDoubleClickEvent(QMouseEvent *event) override;
 
-        void mouseDoubleClickEvent(QMouseEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
 
-        void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
 
-        void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
 
-        void mouseReleaseEvent(QMouseEvent *event) override;
+    void wheelEvent(QWheelEvent *event) override;
 
-        void wheelEvent(QWheelEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
 
-        void keyPressEvent(QKeyEvent *event) override;
+    [[nodiscard]] QString text() const override;
 
-        [[nodiscard]] QString text() const override;
+    void paintEvent(QPaintEvent *event) override;
 
-        void paintEvent(QPaintEvent *event) override;
+    void focusOutEvent(QFocusEvent *event) override;
 
-        void focusOutEvent(QFocusEvent *event) override;
+    void enterEvent(QEnterEvent *event) override;
 
-        void enterEvent(QEnterEvent *event) override;
+    void leaveEvent(QEvent *event) override;
 
-        void leaveEvent(QEvent *event) override;
+    virtual int transform(T val) const = 0;
 
-        virtual int transform(T val) const = 0;
+    virtual T convertString(const QString &string, bool &ok) = 0;
 
-        virtual T convertString(const QString &string, bool &ok) = 0;
+    virtual QString createString(T val) const = 0;
 
-        virtual QString createString(T val) const = 0;
+    virtual void emitValueUpdated(T val) = 0;
 
-        virtual void emitValueUpdated(T val) = 0;
+    virtual T getValueByPosition(int x) = 0;
 
-        virtual T getValueByPosition(int x) = 0;
+protected:
+    T value_;
+    T min_;
+    T max_;
+    T stepSize_;
+    BoundMode boundMode_ = BoundMode::UNCHECKED;
 
+private:
+    const int padding_ = 12;
+    const int blinkerInterval_ = 500;
 
-    protected:
-        T value_;
-        T min_;
-        T max_;
-        T stepSize_;
-        BoundMode boundMode_ = BoundMode::UNCHECKED;
+    bool blinkerVisible_ = false;
+    bool typing_ = false;
+    bool mouseMoved_ = false;
+    int oldPos_;
+    QPoint startPos_;
+    std::shared_ptr<QTimer> blinkerTimer_ = nullptr;
+    QString typeInput_ = "";
+    QString name_ = "value";
 
-    private:
-        const int padding_ = 12;
-        const int blinkerInterval_ = 500;
+    void updateValueByPosition(int x);
 
-        bool blinkerVisible_ = false;
-        bool typing_ = false;
-        bool mouseMoved_ = false;
-        int oldPos_;
-        QPoint startPos_;
-        std::shared_ptr<QTimer> blinkerTimer_ = nullptr;
-        QString typeInput_ = "";
-        QString name_ = "value";
+    void init();
 
-        void updateValueByPosition(int x);
+    void toggleBlinkerVisibility();
 
-        void init();
+    void startTyping();
 
-        void toggleBlinkerVisibility();
+    void stopTyping();
 
-        void startTyping();
+    void submitTypedInput();
 
-        void stopTyping();
+    [[nodiscard]] int getXPosByVal() const;
 
-        void submitTypedInput();
+    bool slidingHover_ = false;
+};
 
-        [[nodiscard]] int getXPosByVal() const;
-
-        bool slidingHover_ = false;
-    };
-} // ValueSliders
+} // namespace ValueSliders

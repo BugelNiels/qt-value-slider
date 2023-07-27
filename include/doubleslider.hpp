@@ -23,33 +23,37 @@
  */
 #pragma once
 
-#include <QProgressBar>
 #include "valueslider.hpp"
 
 namespace ValueSliders {
 
-    class DoubleSlider : public ValueSlider<double> {
+class DoubleSlider : public ValueSlider<double> {
     Q_OBJECT
-    public:
-        DoubleSlider(QString name, double value);
+public:
+    DoubleSlider(QString name, double value);
 
-        DoubleSlider(QString name, double value, double min, double max, BoundMode boundMode = BoundMode::UPPER_LOWER);
+    DoubleSlider(QString name,
+                 double value,
+                 double min,
+                 double max,
+                 BoundMode boundMode = BoundMode::UPPER_LOWER);
 
-        [[nodiscard]] int transform(double val) const override;
+    [[nodiscard]] int transform(double val) const override;
 
-        double convertString(const QString &string, bool &ok) override;
+    double convertString(const QString &string, bool &ok) override;
 
-        [[nodiscard]] QString createString(double val) const override;
+    [[nodiscard]] QString createString(double val) const override;
 
-        void emitValueUpdated(double val) override;
+    void emitValueUpdated(double val) override;
 
-        [[nodiscard]] double getValueByPosition(int x) override;
+    [[nodiscard]] double getValueByPosition(int x) override;
 
-    Q_SIGNALS:
+Q_SIGNALS:
 
-        void valueUpdated(double value);
-    private:
+    void valueUpdated(double value);
 
-        void updateBounds();
-    };
-} // ValueSliders
+private:
+    void updateBounds();
+};
+
+} // namespace ValueSliders

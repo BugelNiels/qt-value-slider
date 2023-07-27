@@ -27,32 +27,37 @@
 
 namespace ValueSliders {
 
-    class IntSlider : public ValueSlider<int> {
+class IntSlider : public ValueSlider<int> {
     Q_OBJECT
-    public:
-        IntSlider(QString name, int value);
+public:
+    IntSlider(QString name, int value);
 
-        IntSlider(QString name, int value, int min, int max, BoundMode boundMode = BoundMode::UPPER_LOWER);
+    IntSlider(QString name,
+              int value,
+              int min,
+              int max,
+              BoundMode boundMode = BoundMode::UPPER_LOWER);
 
-        [[nodiscard]] int transform(int val) const override;
+    [[nodiscard]] int transform(int val) const override;
 
-        int convertString(const QString &string, bool &ok) override;
+    int convertString(const QString &string, bool &ok) override;
 
-        [[nodiscard]] QString createString(int val) const override;
+    [[nodiscard]] QString createString(int val) const override;
 
-        void emitValueUpdated(int val) override;
+    void emitValueUpdated(int val) override;
 
-        [[nodiscard]] int getValueByPosition(int x) override;
+    [[nodiscard]] int getValueByPosition(int x) override;
 
-        void mousePressEvent(QMouseEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
 
-    Q_SIGNALS:
+Q_SIGNALS:
 
-        void valueUpdated(int value);
+    void valueUpdated(int value);
 
-    private:
-        double moveValue_;
+private:
+    double moveValue_;
 
-        void updateBounds();
-    };
-} // ValueSliders
+    void updateBounds();
+};
+
+} // namespace ValueSliders
