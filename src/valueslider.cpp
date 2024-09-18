@@ -181,7 +181,8 @@ void ValueSliders::ValueSlider<T>::mouseReleaseEvent(QMouseEvent *event) {
         if (event->button() == Qt::LeftButton) {
             QCursor::setPos(startPos_);
             updateValueByPosition(event->pos().x() - oldPos_);
-        }
+	    emitEditEnded();
+	}
         QApplication::restoreOverrideCursor();
     } else {
         QApplication::restoreOverrideCursor();
@@ -236,6 +237,7 @@ void ValueSliders::ValueSlider<T>::submitTypedInput() {
     T newVal = convertString(typeInput_, ok);
     if (ok) {
         setVal(newVal);
+	emitEditEnded();
     }
     stopTyping();
     setEnabled(true);

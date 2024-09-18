@@ -45,6 +45,10 @@ void ValueSliders::IntSlider::emitValueUpdated(int val) {
     emit valueUpdated(val);
 }
 
+void ValueSliders::IntSlider::emitEditEnded() {
+    emit editEnded();
+}
+
 int ValueSliders::IntSlider::getValueByPosition(int x) {
     double ratio = static_cast<double>(x) / width();
     double val = ratio * (maximum() - minimum());
