@@ -13,6 +13,8 @@ include(GNUInstallDirs)
 find_package(QT NAMES Qt5 Qt6 REQUIRED COMPONENTS Core)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
+set(CMAKE_AUTOMOC ON)
+
 if (SLIDER_LIBRARY MATCHES ON)
     add_library(${PROJECT_NAME}
             include/doubleslider.hpp
@@ -38,10 +40,18 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         Qt::Widgets
         )
 
-target_include_directories(${PROJECT_NAME}
-        PRIVATE
-        ${CMAKE_CURRENT_LIST_DIR}
+if (SLIDER_LIBRARY MATCHES ON)
+   target_include_directories(${PROJECT_NAME}
+	PUBLIC
+	${CMAKE_CURRENT_LIST_DIR}
         include/
         )
+else ()
+   target_include_directories(${PROJECT_NAME}
+	PRIVATE
+	${CMAKE_CURRENT_LIST_DIR}
+        include/
+        )
+endif ()
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
