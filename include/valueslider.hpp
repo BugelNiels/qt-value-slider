@@ -81,7 +81,6 @@ namespace ValueSliders {
 
         virtual T getValueByPosition(int x) = 0;
 
-
     protected:
         T value_;
         T min_;
