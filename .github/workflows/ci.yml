@@ -45,7 +45,7 @@ jobs:
 
       - name: Lint CMake files
         run: |
-          find . -name 'CMakeLists.txt' -o -name '*.cmake' | xargs cmakelint
+          find . -name 'CMakeLists.txt' -o -name '*.cmake' | xargs cmakelint --linelength=120
 
       # Build the project using CMake
       - name: Create build directory
