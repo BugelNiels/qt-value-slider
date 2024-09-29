@@ -5,6 +5,7 @@ set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 set(CMAKE_AUTOMOC ON)
 
 set(SLIDER_LIBRARY ON)
+option(BUILD_TESTS "Build the test executable" OFF)
 
 project(valueSliders VERSION 1.0 LANGUAGES CXX)
 
@@ -46,26 +47,30 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 )
 
 # Testing
-enable_testing()
+# Testing
+if(BUILD_TESTS)
+    enable_testing()
 
-add_executable(ValueSliderTests
-    test/apptestenvironment.cpp
-    test/doubleslider_test.cpp
-    test/intslider_test.cpp
-)
-target_link_libraries(ValueSliderTests PRIVATE
-    gtest
-    gtest_main
-    Qt::Core
-    Qt::Widgets
-    ${PROJECT_NAME}
-)
+    add_executable(ValueSliderTests
+        test/apptestenvironment.cpp
+        test/doubleslider_test.cpp
+        test/intslider_test.cpp
+    )
 
-target_include_directories(ValueSliderTests PRIVATE
-    include/
-)
+    target_link_libraries(ValueSliderTests PRIVATE
+        gtest
+        gtest_main
+        Qt::Core
+        Qt::Widgets
+        ${PROJECT_NAME}
+    )
 
-add_test(NAME ValueSliderTests COMMAND ValueSliderTests)
+    target_include_directories(ValueSliderTests PRIVATE
+        include/
+    )
+
+    add_test(NAME ValueSliderTests COMMAND ValueSliderTests)
+endif()
 
 # Install
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
