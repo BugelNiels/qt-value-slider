@@ -63,7 +63,7 @@ jobs:
 
       # Test
       - name: Run tests
-        run: ctest --output-on-failure --verbose
+        run: cd build && ctest --output-on-failure --verbose
   build-without-tests:
     runs-on: ubuntu-latest
     steps:
