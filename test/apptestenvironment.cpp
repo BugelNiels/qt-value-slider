@@ -6,14 +6,12 @@ public:
     QApplication *app = nullptr;
 
     virtual void SetUp() {
-        // Create a QApplication instance
         int argc = 0;
-        char **argv = nullptr; // Adjust if you need command line arguments
+        char **argv = nullptr;
         app = new QApplication(argc, argv);
     }
 
     virtual void TearDown() {
-        // Clean up the QApplication instance
         delete app;
         app = nullptr;
     }
