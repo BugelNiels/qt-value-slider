@@ -18,15 +18,11 @@ jobs:
 
       # Set up C++ toolchain
       - name: Install dependencies
-        run: |
-          sudo apt-get update && sudo apt-get install -y \
-          build-essential \
-          cmake \
-          cppcheck \
-          clang-format \
-          qt6-default \
-          qt6-base-dev \
-          qt6-declarative-dev
+        run: sudo apt-get update && sudo apt-get install -y build-essential cmake cppcheck clang-format
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.5.*'
 
       # Run static code analysis using cppcheck
       - name: Static analysis (cppcheck)
