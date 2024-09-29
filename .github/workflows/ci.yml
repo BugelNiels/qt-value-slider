@@ -23,6 +23,8 @@ jobs:
         uses: jurplel/install-qt-action@v4
         with:
           version: '6.5.*'
+          cache: 'false'
+          cache-key-prefix: 'install-qt-action'
 
       # Analysis: cppcheck
       - name: Static analysis (cppcheck)
@@ -78,6 +80,8 @@ jobs:
         uses: jurplel/install-qt-action@v4
         with:
           version: '6.5.*'
+          cache: 'false'
+          cache-key-prefix: 'install-qt-action'
 
       # Build
       - name: Create build directory
