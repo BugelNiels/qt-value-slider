@@ -27,8 +27,9 @@ jobs:
       - name: Static analysis (cppcheck)
         run: |
           cppcheck --enable=all --inconclusive --std=c++17 --force . 2> cppcheck-report.txt || true
-        # Upload cppcheck results as an artifact
-        - name: Upload cppcheck report
+
+      # Upload cppcheck results as an artifact (Corrected indentation)
+      - name: Upload cppcheck report
         uses: actions/upload-artifact@v3
         with:
           name: cppcheck-report
@@ -44,6 +45,7 @@ jobs:
         run: |
           sudo apt-get install -y python3-pip
           pip install cmakelint
+
       - name: Lint CMake files
         run: |
           find . -name 'CMakeLists.txt' -o -name '*.cmake' | xargs cmakelint
