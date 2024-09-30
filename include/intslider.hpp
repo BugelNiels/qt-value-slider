@@ -42,6 +42,8 @@ namespace ValueSliders {
 
         void emitValueUpdated(int val) override;
 
+        void emitEditEnded() override;      
+      
         [[nodiscard]] int getValueByPosition(int x) override;
 
         void mousePressEvent(QMouseEvent *event) override;
@@ -49,6 +51,8 @@ namespace ValueSliders {
     Q_SIGNALS:
 
         void valueUpdated(int value);
+
+        void editEnded();
 
     private:
         double moveValue_;

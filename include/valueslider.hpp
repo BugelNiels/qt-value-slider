@@ -79,6 +79,8 @@ namespace ValueSliders {
 
         virtual void emitValueUpdated(T val) = 0;
 
+        virtual void emitEditEnded() = 0;      
+      
         virtual T getValueByPosition(int x) = 0;
 
     protected:
