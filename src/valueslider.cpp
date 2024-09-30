@@ -294,9 +294,9 @@ T ValueSliders::ValueSlider<T>::getVal() const {
 
 template<class T>
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    void ValueSliders::ValueSlider<T>::enterEvent(QEnterEvent *event) {
+void ValueSliders::ValueSlider<T>::enterEvent(QEnterEvent *event) {
 #else
-    void ValueSliders::ValueSlider<T>::enterEvent(QEvent *event) {
+void ValueSliders::ValueSlider<T>::enterEvent(QEvent *event) {
 #endif
     if (!typing_ && !slidingHover_) {
         QApplication::setOverrideCursor(Qt::SizeHorCursor);

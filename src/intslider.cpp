@@ -66,7 +66,7 @@ int ValueSliders::IntSlider::getValueByPosition(int x) {
         default:
             break;
     }
-    return int(std::round(moveValue_));
+    return int(moveValue_ + 0.5);
 }
 
 void ValueSliders::IntSlider::mousePressEvent(QMouseEvent *event) {
