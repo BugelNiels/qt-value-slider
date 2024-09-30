@@ -1,10 +1,7 @@
 #include "intslider.hpp"
 
 #include <QMouseEvent>
-#include <QPainter>
-#include <QTimer>
-#include <QStyleOptionProgressBar>
-#include <QApplication>
+#include <cmath>
 
 ValueSliders::IntSlider::IntSlider(QString name, int value) : ValueSlider(std::move(name), value) {
     updateBounds();

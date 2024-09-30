@@ -1,7 +1,7 @@
 #include "doubleslider.hpp"
 
 #include <utility>
-#include <QDebug>
+#include <cmath>
 
 ValueSliders::DoubleSlider::DoubleSlider(QString name, double value) : ValueSlider(std::move(name), value) {
     updateBounds();

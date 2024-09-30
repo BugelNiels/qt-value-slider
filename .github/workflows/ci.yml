@@ -23,8 +23,8 @@ jobs:
         uses: jurplel/install-qt-action@v4
         with:
           version: '6.5.*'
-          cache: 'false'
-          cache-key-prefix: 'install-qt-action'
+          cache: 'true'
+          cache-key-prefix: 'install-qt6-action'
 
       # Analysis: cppcheck
       - name: Static analysis (cppcheck)
@@ -80,8 +80,8 @@ jobs:
         uses: jurplel/install-qt-action@v4
         with:
           version: '6.5.*'
-          cache: 'false'
-          cache-key-prefix: 'install-qt-action'
+          cache: 'true'
+          cache-key-prefix: 'install-qt6-action'
 
       # Build
       - name: Create build directory
@@ -92,3 +92,33 @@ jobs:
 
       - name: Build with CMake
         run: cmake --build build
+  build-qt5:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Install packages
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y build-essential cmake libgtest-dev
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '5.15.*'
+          cache: 'false'
+          cache-key-prefix: 'install-qt5-action'
+
+      # Build
+      - name: Create build directory
+        run: mkdir build
+
+      - name: Configure with CMake
+        run: cmake -S . -B build -DBUILD_TESTS=ON
+
+      - name: Build with CMake
+        run: cmake --build build
+
+      # Test
+      - name: Run tests
+        run: cd build && QT_QPA_PLATFORM="offscreen" ctest --output-on-failure --verbose
