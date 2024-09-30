@@ -181,6 +181,7 @@ void ValueSliders::ValueSlider<T>::mouseReleaseEvent(QMouseEvent *event) {
         if (event->button() == Qt::LeftButton) {
             QCursor::setPos(startPos_);
             updateValueByPosition(event->pos().x() - oldPos_);
+            emitEditEnded();
         }
         QApplication::restoreOverrideCursor();
     } else {

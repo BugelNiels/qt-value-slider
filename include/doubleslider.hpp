@@ -43,11 +43,16 @@ namespace ValueSliders {
 
         void emitValueUpdated(double val) override;
 
+        void emitEditEnded() override;
+
         [[nodiscard]] double getValueByPosition(int x) override;
 
     Q_SIGNALS:
 
         void valueUpdated(double value);
+
+        void editEnded();
+
     private:
 
         void updateBounds();
