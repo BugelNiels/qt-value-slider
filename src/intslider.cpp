@@ -1,10 +1,7 @@
 #include "intslider.hpp"
 
 #include <QMouseEvent>
-#include <QPainter>
-#include <QTimer>
-#include <QStyleOptionProgressBar>
-#include <QApplication>
+#include <cmath>
 
 ValueSliders::IntSlider::IntSlider(QString name, int value) : ValueSlider(std::move(name), value) {
     updateBounds();
@@ -66,7 +63,7 @@ int ValueSliders::IntSlider::getValueByPosition(int x) {
         default:
             break;
     }
-    return int(moveValue_ + 0.5);
+    return int(std::round(moveValue_));
 }
 
 void ValueSliders::IntSlider::mousePressEvent(QMouseEvent *event) {

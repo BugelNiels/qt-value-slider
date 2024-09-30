@@ -1,7 +1,7 @@
 #include "doubleslider.hpp"
 
 #include <utility>
-#include <QDebug>
+#include <cmath>
 
 ValueSliders::DoubleSlider::DoubleSlider(QString name, double value) : ValueSlider(std::move(name), value) {
     updateBounds();
@@ -15,17 +15,17 @@ ValueSliders::DoubleSlider::DoubleSlider(QString name, double value, double min,
 }
 
 void ValueSliders::DoubleSlider::updateBounds() {
-    setMinimum(int(min_ * 100.0 + 0.5));
-    setMaximum(int(max_ * 100.0 + 0.5));
+    setMinimum(int(std::round(min_ * 100.0)));
+    setMaximum(int(std::round(max_ * 100.0)));
     if(boundMode_ == BoundMode::UPPER_LOWER) {
-        setValue(int(value_ * 100.0 + 0.5));
+        setValue(int(std::round(value_ * 100.0)));
     } else {
         setValue(minimum());
     }
 }
 
 int ValueSliders::DoubleSlider::transform(double val) const {
-    return int(val * 100.0 + 0.5);
+    return int(std::round(val * 100.0));
 }
 
 double ValueSliders::DoubleSlider::convertString(const QString &string, bool &ok) {

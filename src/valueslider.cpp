@@ -4,7 +4,6 @@
 #include <QPainter>
 #include <QTimer>
 #include <QStyleOptionProgressBar>
-#include <QElapsedTimer>
 #include <utility>
 #include <QApplication>
 
