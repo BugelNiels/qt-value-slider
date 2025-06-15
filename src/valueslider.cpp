@@ -246,6 +246,7 @@ void ValueSliders::ValueSlider<T>::submitTypedInput() {
     } else {
         slidingHover_ = false;
     }
+    emitEditEnded();
 }
 
 template<class T>
