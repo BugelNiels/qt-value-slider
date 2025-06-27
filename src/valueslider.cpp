@@ -55,7 +55,7 @@ void ValueSliders::ValueSlider<T>::init() {
 
 template<class T>
 void ValueSliders::ValueSlider<T>::toggleBlinkerVisibility() {
-    blinkerVisible_ =!blinkerVisible_;
+    blinkerVisible_ = !blinkerVisible_;
     update();
 }
 
