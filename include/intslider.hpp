@@ -1,7 +1,7 @@
 /**
  * MIT License
  *
- * Copyright (c) 2023 Niels Bugel
+ * Copyright (c) 2023-2025 Niels Bugel
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -10,8 +10,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -27,36 +27,36 @@
 
 namespace ValueSliders {
 
-    class IntSlider : public ValueSlider<int> {
+class IntSlider : public ValueSlider<int> {
     Q_OBJECT
-    public:
-        IntSlider(QString name, int value);
+  public:
+    IntSlider(QString name, int value);
 
-        IntSlider(QString name, int value, int min, int max, BoundMode boundMode = BoundMode::UPPER_LOWER);
+    IntSlider(QString name, int value, int min, int max, BoundMode boundMode = BoundMode::UPPER_LOWER);
 
-        [[nodiscard]] int transform(int val) const override;
+    [[nodiscard]] int transform(int val) const override;
 
-        int convertString(const QString &string, bool &ok) override;
+    int convertString(const QString& string, bool& ok) override;
 
-        [[nodiscard]] QString createString(int val) const override;
+    [[nodiscard]] QString createString(int val) const override;
 
-        void emitValueUpdated(int val) override;
+    void emitValueUpdated(int val) override;
 
-        void emitEditEnded() override;      
-      
-        [[nodiscard]] int getValueByPosition(int x) override;
+    void emitEditEnded() override;
 
-        void mousePressEvent(QMouseEvent *event) override;
+    [[nodiscard]] int getValueByPosition(int x) override;
 
-    Q_SIGNALS:
+    void mousePressEvent(QMouseEvent* event) override;
 
-        void valueUpdated(int value);
+  Q_SIGNALS:
 
-        void editEnded();
+    void valueUpdated(int value);
 
-    private:
-        double moveValue_;
+    void editEnded();
 
-        void updateBounds();
-    };
-} // ValueSliders
+  private:
+    double moveValue_;
+
+    void updateBounds();
+};
+}  // namespace ValueSliders

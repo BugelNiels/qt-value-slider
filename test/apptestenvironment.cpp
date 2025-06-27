@@ -1,13 +1,13 @@
-#include <gtest/gtest.h>
 #include <QApplication>
+#include <gtest/gtest.h>
 
 class QtTestEnvironment : public ::testing::Environment {
-public:
-    QApplication *app = nullptr;
+  public:
+    QApplication* app = nullptr;
 
     virtual void SetUp() {
         int argc = 0;
-        char **argv = nullptr;
+        char** argv = nullptr;
         app = new QApplication(argc, argv);
     }
 
@@ -18,4 +18,4 @@ public:
 };
 
 // Register the environment
-::testing::Environment *const env = ::testing::AddGlobalTestEnvironment(new QtTestEnvironment());
+::testing::Environment* const env = ::testing::AddGlobalTestEnvironment(new QtTestEnvironment());

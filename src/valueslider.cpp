@@ -1,16 +1,15 @@
 #include "valueslider.hpp"
 
+#include <QApplication>
 #include <QMouseEvent>
 #include <QPainter>
-#include <QTimer>
 #include <QStyleOptionProgressBar>
+#include <QTimer>
 #include <utility>
-#include <QApplication>
 
 template<class T>
-ValueSliders::ValueSlider<T>::ValueSlider(QString name, T value)
-        : name_(std::move(name)),
-          value_(value) {
+ValueSliders::ValueSlider<T>::ValueSlider(QString name, T value) : name_(std::move(name)),
+                                                                   value_(value) {
     if (value > 0) {
         min_ = 0;
         max_ = value_ * 2;
@@ -26,20 +25,19 @@ ValueSliders::ValueSlider<T>::ValueSlider(QString name, T value)
 
 template<class T>
 ValueSliders::ValueSlider<T>::ValueSlider(QString name, T value, T min, T max, BoundMode boundMode)
-        : boundMode_(boundMode),
-          name_(std::move(name)),
-          value_(value),
-          min_(min),
-          max_(max) {
-
+    : boundMode_(boundMode),
+      name_(std::move(name)),
+      value_(value),
+      min_(min),
+      max_(max) {
     if (min > max) {
-        throw std::invalid_argument(
-                QString("ValueSlider min val cannot be greater than max val.\nMin: %1\nMax: %2\n").arg(min,
-                                                                                                       max).toStdString());
+        throw std::invalid_argument(QString("ValueSlider min val cannot be greater "
+                                            "than max val.\nMin: %1\nMax: %2\n")
+                                        .arg(min, max)
+                                        .toStdString());
     }
     init();
 }
-
 
 template<class T>
 ValueSliders::ValueSlider<T>::~ValueSlider() {
@@ -89,7 +87,7 @@ void ValueSliders::ValueSlider<T>::stopTyping() {
 }
 
 template<class T>
-void ValueSliders::ValueSlider<T>::paintEvent(QPaintEvent *event) {
+void ValueSliders::ValueSlider<T>::paintEvent(QPaintEvent* event) {
     QProgressBar::paintEvent(event);
 
     QPainter painter(this);
@@ -135,11 +133,10 @@ void ValueSliders::ValueSlider<T>::paintEvent(QPaintEvent *event) {
         QRect valueRect = rect.adjusted(QFontMetrics(font()).horizontalAdvance(nameText), 0, -padding_, 0);
         painter.drawText(valueRect, Qt::AlignRight | Qt::AlignVCenter, valueText);
     }
-
 }
 
 template<class T>
-void ValueSliders::ValueSlider<T>::mousePressEvent(QMouseEvent *event) {
+void ValueSliders::ValueSlider<T>::mousePressEvent(QMouseEvent* event) {
     setFocus();
     if (typing_) {
         return;
@@ -153,7 +150,7 @@ void ValueSliders::ValueSlider<T>::mousePressEvent(QMouseEvent *event) {
 }
 
 template<class T>
-void ValueSliders::ValueSlider<T>::mouseMoveEvent(QMouseEvent *event) {
+void ValueSliders::ValueSlider<T>::mouseMoveEvent(QMouseEvent* event) {
     if (typing_) {
         return;
     }
@@ -186,7 +183,7 @@ int ValueSliders::ValueSlider<T>::getXPosByVal() const {
 }
 
 template<class T>
-void ValueSliders::ValueSlider<T>::mouseReleaseEvent(QMouseEvent *event) {
+void ValueSliders::ValueSlider<T>::mouseReleaseEvent(QMouseEvent* event) {
     if (mouseMoved_) {
         if (event->button() == Qt::LeftButton) {
             emitEditEnded();
@@ -210,14 +207,14 @@ void ValueSliders::ValueSlider<T>::updateValueByPosition(int x) {
 }
 
 template<class T>
-void ValueSliders::ValueSlider<T>::mouseDoubleClickEvent(QMouseEvent *event) {
+void ValueSliders::ValueSlider<T>::mouseDoubleClickEvent(QMouseEvent* event) {
     if (event->button() == Qt::LeftButton && !typing_) {
         startTyping();
     }
 }
 
 template<class T>
-void ValueSliders::ValueSlider<T>::keyPressEvent(QKeyEvent *event) {
+void ValueSliders::ValueSlider<T>::keyPressEvent(QKeyEvent* event) {
     if (typing_) {
         event->accept();
         if (event->key() == Qt::Key_Escape) {
@@ -259,7 +256,7 @@ void ValueSliders::ValueSlider<T>::submitTypedInput() {
 }
 
 template<class T>
-void ValueSliders::ValueSlider<T>::focusOutEvent(QFocusEvent *event) {
+void ValueSliders::ValueSlider<T>::focusOutEvent(QFocusEvent* event) {
     if (typing_) {
         submitTypedInput();
     }
@@ -303,9 +300,9 @@ T ValueSliders::ValueSlider<T>::getVal() const {
 
 template<class T>
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-void ValueSliders::ValueSlider<T>::enterEvent(QEnterEvent *event) {
+void ValueSliders::ValueSlider<T>::enterEvent(QEnterEvent* event) {
 #else
-void ValueSliders::ValueSlider<T>::enterEvent(QEvent *event) {
+void ValueSliders::ValueSlider<T>::enterEvent(QEvent* event) {
 #endif
     if (!typing_ && !slidingHover_) {
         QApplication::setOverrideCursor(Qt::SizeHorCursor);
@@ -314,15 +311,13 @@ void ValueSliders::ValueSlider<T>::enterEvent(QEvent *event) {
 }
 
 template<class T>
-void ValueSliders::ValueSlider<T>::leaveEvent(QEvent *event) {
+void ValueSliders::ValueSlider<T>::leaveEvent(QEvent* event) {
     if (!typing_) {
         QApplication::restoreOverrideCursor();
         slidingHover_ = false;
     }
 }
 
-template
-class ValueSliders::ValueSlider<int>;
+template class ValueSliders::ValueSlider<int>;
 
-template
-class ValueSliders::ValueSlider<double>;
+template class ValueSliders::ValueSlider<double>;

@@ -1,7 +1,7 @@
 /**
  * MIT License
  *
- * Copyright (c) 2023 Niels Bugel
+ * Copyright (c) 2023-2025 Niels Bugel
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -10,8 +10,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -27,75 +27,69 @@
 
 namespace ValueSliders {
 
-    enum class BoundMode {
-        UNCHECKED,
-        UPPER_ONLY,
-        LOWER_ONLY,
-        UPPER_LOWER
-    };
+enum class BoundMode { UNCHECKED, UPPER_ONLY, LOWER_ONLY, UPPER_LOWER };
 
-    template<class T>
-    class ValueSlider : public QProgressBar {
-    public:
-        ValueSlider(QString name, T value);
+template<class T>
+class ValueSlider : public QProgressBar {
+  public:
+    ValueSlider(QString name, T value);
 
-        ValueSlider(QString name, T value, T min, T max, BoundMode boundMode);
+    ValueSlider(QString name, T value, T min, T max, BoundMode boundMode);
 
-        ~ValueSlider() override;
+    ~ValueSlider() override;
 
-        void setVal(T value);
+    void setVal(T value);
 
-        [[nodiscard]] T getVal() const;
+    [[nodiscard]] T getVal() const;
 
-        [[nodiscard]] T boundVal(T value) const;
+    [[nodiscard]] T boundVal(T value) const;
 
-    protected:
+  protected:
+    void mouseDoubleClickEvent(QMouseEvent* event) override;
 
-        void mouseDoubleClickEvent(QMouseEvent *event) override;
+    void mousePressEvent(QMouseEvent* event) override;
 
-        void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
 
-        void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
 
-        void mouseReleaseEvent(QMouseEvent *event) override;
+    void keyPressEvent(QKeyEvent* event) override;
 
-        void keyPressEvent(QKeyEvent *event) override;
+    [[nodiscard]] QString text() const override;
 
-        [[nodiscard]] QString text() const override;
+    void paintEvent(QPaintEvent* event) override;
 
-        void paintEvent(QPaintEvent *event) override;
+    void focusOutEvent(QFocusEvent* event) override;
 
-        void focusOutEvent(QFocusEvent *event) override;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    void enterEvent(QEnterEvent* event) override;
+#else
+    void enterEvent(QEvent* event) override;
+#endif
 
-        #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-        void enterEvent(QEnterEvent *event) override;
-        #else
-        void enterEvent(QEvent *event) override;
-        #endif
+    void leaveEvent(QEvent* event) override;
 
-        void leaveEvent(QEvent *event) override;
+    virtual int transform(T val) const = 0;
 
-        virtual int transform(T val) const = 0;
+    virtual T convertString(const QString& string, bool& ok) = 0;
 
-        virtual T convertString(const QString &string, bool &ok) = 0;
+    virtual QString createString(T val) const = 0;
 
-        virtual QString createString(T val) const = 0;
+    virtual void emitValueUpdated(T val) = 0;
 
-        virtual void emitValueUpdated(T val) = 0;
+    virtual void emitEditEnded() = 0;
 
-        virtual void emitEditEnded() = 0;      
-      
-        virtual T getValueByPosition(int x) = 0;
+    virtual T getValueByPosition(int x) = 0;
 
-    protected:
-        T value_;
-        T min_;
-        T max_;
-        BoundMode boundMode_ = BoundMode::UNCHECKED;
+  protected:
+    T value_;
+    T min_;
+    T max_;
+    BoundMode boundMode_ = BoundMode::UNCHECKED;
 
-    private:
-        const int padding_ = 12;
-        const int blinkerInterval_ = 500;
+  private:
+    const int padding_ = 12;
+    const int blinkerInterval_ = 500;
 
         // This determines how "fine" is the tuning. If the constant
         // equals 64 for example, the slider tick is 64th times
@@ -112,20 +106,20 @@ namespace ValueSliders {
         QString typeInput_ = "";
         QString name_ = "value";
 
-        void updateValueByPosition(int x);
+    void updateValueByPosition(int x);
 
-        void init();
+    void init();
 
-        void toggleBlinkerVisibility();
+    void toggleBlinkerVisibility();
 
-        void startTyping();
+    void startTyping();
 
-        void stopTyping();
+    void stopTyping();
 
-        void submitTypedInput();
+    void submitTypedInput();
 
-        [[nodiscard]] int getXPosByVal() const;
+    [[nodiscard]] int getXPosByVal() const;
 
-        bool slidingHover_ = false;
-    };
-} // ValueSliders
+    bool slidingHover_ = false;
+};
+}  // namespace ValueSliders

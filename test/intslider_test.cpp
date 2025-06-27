@@ -1,6 +1,6 @@
+#include "intslider.hpp"
 #include <QApplication>
 #include <gtest/gtest.h>
-#include "intslider.hpp"
 
 TEST(IntSliderTest, ConstructorDefaultPositive) {
     int val = 10;
