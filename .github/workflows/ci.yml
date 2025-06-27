@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-latest
     steps:
       # Checkout
@@ -18,7 +18,9 @@ jobs:
 
       # Install packages
       - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y build-essential cmake cppcheck clang-format libgtest-dev
+        run: |
+          sudo apt-get update && sudo apt-get install -y build-essential cmake cppcheck clang-format libgtest-dev python3-pip
+          pip install cmakelint
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
@@ -26,45 +28,55 @@ jobs:
           cache: 'true'
           cache-key-prefix: 'install-qt6-action'
 
-      # Analysis: cppcheck
-      - name: Static analysis (cppcheck)
+      # cppcheck
+      - name: cppcheck
         run: |
           cppcheck --enable=all --inconclusive --std=c++17 --force . 2> cppcheck-report.txt || true
 
       # Upload cppcheck
-      - name: Upload cppcheck report
+      - name: cppcheck report
         uses: actions/upload-artifact@v4
         with:
           name: cppcheck-report
           path: cppcheck-report.txt
 
-      # Lint: clang-format
-      - name: Lint C++ files (clang-format)
+      # clang-format
+      - name: clang-format
         run: |
-          git-clang-format --diff --quiet || exit 1
+          git fetch origin ${{ github.event.pull_request.base.ref }}
+          git-clang-format origin/${{ github.event.pull_request.base.ref }} --diff --quiet || exit 1
 
-      # Lint: cmakelint
-      - name: Install pip and cmakelint
-        run: |
-          sudo apt-get install -y python3-pip
-          pip install cmakelint
-
-      - name: Lint CMake files
+      # cmakelint
+      - name: cmakelint
         run: |
           find . -name 'CMakeLists.txt' -o -name '*.cmake' | xargs cmakelint --linelength=120
 
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Install packages
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y build-essential cmake libgtest-dev
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.5.*'
+          cache: 'true'
+          cache-key-prefix: 'install-qt6-action'
+
       # Build
-      - name: Create build directory
-        run: mkdir build
-
-      - name: Configure with CMake
-        run: cmake -S . -B build -DBUILD_TESTS=ON
-
-      - name: Build with CMake
-        run: cmake --build build
+      - name: Build
+        run: |
+          mkdir build
+          cmake -S . -B build -DBUILD_TESTS=ON
+          cmake --build build
 
       # Test
-      - name: Run tests
+      - name: Run unit tests
         run: cd build && QT_QPA_PLATFORM="offscreen" ctest --output-on-failure --verbose
   build-without-tests:
     runs-on: ubuntu-latest
@@ -84,14 +96,11 @@ jobs:
           cache-key-prefix: 'install-qt6-action'
 
       # Build
-      - name: Create build directory
-        run: mkdir build
-
-      - name: Configure with CMake
-        run: cmake -S . -B build -DBUILD_TESTS=OFF
-
-      - name: Build with CMake
-        run: cmake --build build
+      - name: build
+        run: |
+          mkdir build
+          cmake -S . -B build -DBUILD_TESTS=OFF
+          cmake --build build
   build-qt5:
     runs-on: ubuntu-latest
     steps:
@@ -110,15 +119,12 @@ jobs:
           cache-key-prefix: 'install-qt5-action'
 
       # Build
-      - name: Create build directory
-        run: mkdir build
-
-      - name: Configure with CMake
-        run: cmake -S . -B build -DBUILD_TESTS=ON
-
-      - name: Build with CMake
-        run: cmake --build build
+      - name: Build
+        run: |
+          mkdir build
+          cmake -S . -B build -DBUILD_TESTS=ON
+          cmake --build build
 
       # Test
-      - name: Run tests
+      - name: Run unit tests
         run: cd build && QT_QPA_PLATFORM="offscreen" ctest --output-on-failure --verbose
