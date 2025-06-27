@@ -18,7 +18,7 @@ jobs:
 
       # Install packages
       - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y build-essential cmake cppcheck git-clang-format libgtest-dev
+        run: sudo apt-get update && sudo apt-get install -y build-essential cmake cppcheck clang-format libgtest-dev
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
