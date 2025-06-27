@@ -102,6 +102,8 @@ namespace ValueSliders {
         bool mouseMoved_ = false;
         int oldPos_;
         QPoint startPos_;
+        int pendingDiff_ = 0;
+        int totalDiff_ = 0;
         std::shared_ptr<QTimer> blinkerTimer_ = nullptr;
         QString typeInput_ = "";
         QString name_ = "value";
