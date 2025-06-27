@@ -18,7 +18,7 @@ jobs:
 
       # Install packages
       - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y build-essential cmake cppcheck clang-format libgtest-dev
+        run: sudo apt-get update && sudo apt-get install -y build-essential cmake cppcheck git-clang-format libgtest-dev
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
@@ -41,7 +41,7 @@ jobs:
       # Lint: clang-format
       - name: Lint C++ files (clang-format)
         run: |
-          find . -name '*.cpp' -o -name '*.hpp' | xargs clang-format --Werror
+          git-clang-format --diff --quiet || exit 1
 
       # Lint: cmakelint
       - name: Install pip and cmakelint
