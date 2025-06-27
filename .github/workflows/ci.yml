@@ -41,7 +41,7 @@ jobs:
       # Lint: clang-format
       - name: Lint C++ files (clang-format)
         run: |
-          find . -name '*.cpp' -o -name '*.hpp' | xargs clang-format -i
+          find . -name '*.cpp' -o -name '*.hpp' | xargs clang-format --Werror
 
       # Lint: cmakelint
       - name: Install pip and cmakelint
