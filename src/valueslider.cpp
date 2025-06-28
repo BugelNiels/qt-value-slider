@@ -148,7 +148,6 @@ void ValueSliders::ValueSlider<T>::mousePressEvent(QMouseEvent *event) {
         QApplication::setOverrideCursor(Qt::BlankCursor);
         startPos_ = QCursor::pos();
         oldPos_ = event->pos().x();
-	totalDiff_ = 0;
         mouseMoved_ = false;
     }
 }
@@ -164,13 +163,12 @@ void ValueSliders::ValueSlider<T>::mouseMoveEvent(QMouseEvent *event) {
       if (event->modifiers() & Qt::ControlModifier) {
         pendingDiff_ +=diff;
 
-        if (std::abs(pendingDiff_) < 64) {
+        if (std::abs(pendingDiff_) < fineTuningThreshold_) {
           return;
         }
         diff = pendingDiff_ > 0 ? 1 : -1;
       }
       pendingDiff_ = 0;
-      totalDiff_ += diff;
 
       QCursor::setPos(startPos_);
       updateValueByPosition(diff);

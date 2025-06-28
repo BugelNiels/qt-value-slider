@@ -96,6 +96,7 @@ namespace ValueSliders {
     private:
         const int padding_ = 12;
         const int blinkerInterval_ = 500;
+        const int fineTuningThreshold_ = 64;
 
         bool blinkerVisible_ = false;
         bool typing_ = false;
@@ -103,7 +104,6 @@ namespace ValueSliders {
         int oldPos_;
         QPoint startPos_;
         int pendingDiff_ = 0;
-        int totalDiff_ = 0;
         std::shared_ptr<QTimer> blinkerTimer_ = nullptr;
         QString typeInput_ = "";
         QString name_ = "value";
