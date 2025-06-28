@@ -96,6 +96,10 @@ namespace ValueSliders {
     private:
         const int padding_ = 12;
         const int blinkerInterval_ = 500;
+
+        // This determines how "fine" is the tuning. If the constant
+        // equals 64 for example, the slider tick is 64th times
+        // smaller.
         const int fineTuningThreshold_ = 64;
 
         bool blinkerVisible_ = false;
