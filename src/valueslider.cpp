@@ -158,11 +158,22 @@ void ValueSliders::ValueSlider<T>::mouseMoveEvent(QMouseEvent *event) {
         return;
     }
     if (event->buttons() & Qt::LeftButton) {
-        int diff = event->pos().x() - oldPos_;
-        QCursor::setPos(startPos_);
-        updateValueByPosition(diff);
-        mouseMoved_ = true;
-        return;
+      int diff = event->pos().x() - oldPos_;
+
+      if (event->modifiers() & Qt::ControlModifier) {
+        pendingDiff_ +=diff;
+
+        if (std::abs(pendingDiff_) < fineTuningThreshold_) {
+          return;
+        }
+        diff = pendingDiff_ > 0 ? 1 : -1;
+      }
+      pendingDiff_ = 0;
+
+      QCursor::setPos(startPos_);
+      updateValueByPosition(diff);
+      mouseMoved_ = true;
+      return;
     }
 }
 
@@ -178,8 +189,6 @@ template<class T>
 void ValueSliders::ValueSlider<T>::mouseReleaseEvent(QMouseEvent *event) {
     if (mouseMoved_) {
         if (event->button() == Qt::LeftButton) {
-            QCursor::setPos(startPos_);
-            updateValueByPosition(event->pos().x() - oldPos_);
             emitEditEnded();
         }
         QApplication::restoreOverrideCursor();
@@ -246,6 +255,7 @@ void ValueSliders::ValueSlider<T>::submitTypedInput() {
     } else {
         slidingHover_ = false;
     }
+    emitEditEnded();
 }
 
 template<class T>
