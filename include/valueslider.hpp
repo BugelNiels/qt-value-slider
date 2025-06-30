@@ -91,20 +91,20 @@ class ValueSlider : public QProgressBar {
     const int padding_ = 12;
     const int blinkerInterval_ = 500;
 
-        // This determines how "fine" is the tuning. If the constant
-        // equals 64 for example, the slider tick is 64th times
-        // smaller.
-        const int fineTuningThreshold_ = 64;
+    // This determines how "fine" is the tuning. If the constant
+    // equals 64 for example, the slider tick is 64th times
+    // smaller.
+    const int fineTuningThreshold_ = 64;
 
-        bool blinkerVisible_ = false;
-        bool typing_ = false;
-        bool mouseMoved_ = false;
-        int oldPos_;
-        QPoint startPos_;
-        int pendingDiff_ = 0;
-        std::shared_ptr<QTimer> blinkerTimer_ = nullptr;
-        QString typeInput_ = "";
-        QString name_ = "value";
+    bool blinkerVisible_ = false;
+    bool typing_ = false;
+    bool mouseMoved_ = false;
+    int oldPos_;
+    QPoint startPos_;
+    int pendingDiff_ = 0;
+    std::shared_ptr<QTimer> blinkerTimer_ = nullptr;
+    QString typeInput_ = "";
+    QString name_ = "value";
 
     void updateValueByPosition(int x);
 

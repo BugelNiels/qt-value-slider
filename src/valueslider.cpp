@@ -155,22 +155,22 @@ void ValueSliders::ValueSlider<T>::mouseMoveEvent(QMouseEvent* event) {
         return;
     }
     if (event->buttons() & Qt::LeftButton) {
-      int diff = event->pos().x() - oldPos_;
+        int diff = event->pos().x() - oldPos_;
 
-      if (event->modifiers() & Qt::ControlModifier) {
-        pendingDiff_ +=diff;
+        if (event->modifiers() & Qt::ControlModifier) {
+            pendingDiff_ += diff;
 
-        if (std::abs(pendingDiff_) < fineTuningThreshold_) {
-          return;
+            if (std::abs(pendingDiff_) < fineTuningThreshold_) {
+                return;
+            }
+            diff = pendingDiff_ > 0 ? 1 : -1;
         }
-        diff = pendingDiff_ > 0 ? 1 : -1;
-      }
-      pendingDiff_ = 0;
+        pendingDiff_ = 0;
 
-      QCursor::setPos(startPos_);
-      updateValueByPosition(diff);
-      mouseMoved_ = true;
-      return;
+        QCursor::setPos(startPos_);
+        updateValueByPosition(diff);
+        mouseMoved_ = true;
+        return;
     }
 }
 
