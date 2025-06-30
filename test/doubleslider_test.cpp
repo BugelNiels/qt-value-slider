@@ -1,6 +1,6 @@
+#include "doubleslider.hpp"
 #include <QApplication>
 #include <gtest/gtest.h>
-#include "doubleslider.hpp"
 
 TEST(DoubleSliderTest, ConstructorDefaultPositive) {
     double val = 10.0;
@@ -128,7 +128,8 @@ TEST(DoubleSliderTest, ConvertStringToDouble) {
     EXPECT_DOUBLE_EQ(slider.convertString("-5.5", ok), -5.5);
     EXPECT_TRUE(ok);
 
-    EXPECT_DOUBLE_EQ(slider.convertString("abc", ok), 0.0); // Assuming it returns 0 for invalid input
+    EXPECT_DOUBLE_EQ(slider.convertString("abc", ok),
+                     0.0);  // Assuming it returns 0 for invalid input
     EXPECT_FALSE(ok);
 }
 

@@ -7,30 +7,26 @@ ValueSliders::IntSlider::IntSlider(QString name, int value) : ValueSlider(std::m
     updateBounds();
 }
 
-ValueSliders::IntSlider::IntSlider(QString name, int value, int min, int max,
-                                   ValueSliders::BoundMode boundMode) : ValueSlider(std::move(name), value, min,
-                                                                                    max,
-                                                                                    boundMode) {
+ValueSliders::IntSlider::IntSlider(QString name, int value, int min, int max, ValueSliders::BoundMode boundMode)
+    : ValueSlider(std::move(name), value, min, max, boundMode) {
     updateBounds();
 }
 
 void ValueSliders::IntSlider::updateBounds() {
-
     setMinimum(min_);
     setMaximum(max_);
-    if(boundMode_ == BoundMode::UPPER_LOWER) {
+    if (boundMode_ == BoundMode::UPPER_LOWER) {
         setValue(value_);
     } else {
         setValue(minimum());
     }
 }
 
-
 int ValueSliders::IntSlider::transform(int val) const {
     return val;
 }
 
-int ValueSliders::IntSlider::convertString(const QString &string, bool &ok) {
+int ValueSliders::IntSlider::convertString(const QString& string, bool& ok) {
     return string.toInt(&ok);
 }
 
@@ -66,7 +62,7 @@ int ValueSliders::IntSlider::getValueByPosition(int x) {
     return int(std::round(moveValue_));
 }
 
-void ValueSliders::IntSlider::mousePressEvent(QMouseEvent *event) {
+void ValueSliders::IntSlider::mousePressEvent(QMouseEvent* event) {
     ValueSlider::mousePressEvent(event);
     moveValue_ = value_;
 }
